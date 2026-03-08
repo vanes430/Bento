@@ -198,7 +198,6 @@ repositories {
     mavenCentral() 
 
     // Custom repositories for Minecraft and plugin-specific libraries
-    maven("https://jitpack.io") { name = "JitPack" } // GitHub repository packages
     maven("https://repo.codemc.org/repository/maven-public") { name = "CodeMC-Public" }
     maven("https://libraries.minecraft.net/") { name = "MinecraftLibs" } // Official Minecraft libraries
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots") { name = "Spigot-Snapshots" }
@@ -214,6 +213,8 @@ repositories {
     maven("https://repo.codemc.org/repository/bentoboxworld/") { name = "BentoBoxWorld-Repo" }
     maven("https://repo.extendedclip.com/releases/") { name = "Placeholder-API-Releases" }
     maven("https://maven.canvasmc.io/snapshots") { name = "CanvasMC-Snapshots" } // CanvasMC API
+    // JitPack - GitHub repository packages (Last resort as it can be slow)
+    maven("https://jitpack.io") { name = "JitPack" }
 }
 
 
