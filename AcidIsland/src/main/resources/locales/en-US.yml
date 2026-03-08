@@ -1,0 +1,28 @@
+###########################################################################################
+# This is a YML file. Be careful when editing. Check your edits in a YAML checker like    #
+# the one at http://yaml-online-parser.appspot.com                                        #
+###########################################################################################
+
+acidisland:
+  sign:
+    line0: "&1AcidIsland"
+    line1: "[name]"
+    line2: "Water is acid!"
+    line3: "Be careful! &c<3"
+  panels:
+    island-creation:
+      buttons:
+        bundle:
+          default:
+            name: "&a&lDefault Island"
+            description: |-
+              &7Survive on a small island floating
+              &7in a dangerous acid ocean!
+
+              &f Features:
+                &8- &7Custom Acid Ocean
+                &8- &7Unique Challenges
+                &8- &7Endless Adventure
+
+              &eClick to start your adventure!
+    

@@ -1,0 +1,95 @@
+# MagicCobblestoneGenerator - Simplified 5-Tier Configuration
+# All tiers work in ALL dimensions and ALL biomes.
+
+tiers:
+  tier_1:
+    name: "&7[&fLevel 1&7] &fStarter Generator"
+    description: |-
+       &7 Basic generator for 
+       &7 every new island.
+    icon: "COBBLESTONE:1"
+    type: ANY
+    default: true
+    priority: 1
+    blocks:
+      STONE: 30
+      COBBLESTONE: 60
+      ANDESITE: 4
+      DIORITE: 3
+      GRANITE: 3
+
+  tier_2:
+    name: "&7[&6Level 2&7] &6Apprentice Generator"
+    description: |-
+       &7 Better rocks with 
+       &7 some Coal and Iron.
+    icon: "IRON_ORE:1"
+    type: ANY
+    priority: 2
+    requirements:
+      purchase-cost: 1000.0
+    blocks:
+      STONE: 30
+      COBBLESTONE: 40
+      COAL_ORE: 15
+      IRON_ORE: 10
+      ANDESITE: 2
+      DIORITE: 2
+      GRANITE: 1
+
+  tier_3:
+    name: "&7[&bLevel 3&7] &bExpert Generator"
+    description: |-
+       &7 Richer ores including 
+       &7 Gold and Lapis.
+    icon: "GOLD_ORE:1"
+    type: ANY
+    priority: 3
+    requirements:
+      purchase-cost: 5000.0
+    blocks:
+      STONE: 25
+      COBBLESTONE: 30
+      IRON_ORE: 15
+      GOLD_ORE: 10
+      LAPIS_ORE: 10
+      COAL_ORE: 10
+
+  tier_4:
+    name: "&7[&cLevel 4&7] &cMaster Generator"
+    description: |-
+       &7 Advanced ores with 
+       &7 Redstone and Diamonds.
+    icon: "DIAMOND_ORE:1"
+    type: ANY
+    priority: 4
+    requirements:
+      purchase-cost: 25000.0
+    blocks:
+      STONE: 20
+      COBBLESTONE: 20
+      IRON_ORE: 15
+      GOLD_ORE: 15
+      REDSTONE_ORE: 15
+      DIAMOND_ORE: 10
+      LAPIS_ORE: 5
+
+  tier_5:
+    name: "&7[&aLevel 5&7] &aLegendary Generator"
+    description: |-
+       &7 The ultimate generator 
+       &7 with Ancient Debris.
+    icon: "NETHERITE_SCRAP:1"
+    type: ANY
+    priority: 5
+    requirements:
+      purchase-cost: 100000.0
+    blocks:
+      STONE: 15
+      COBBLESTONE: 15
+      DIAMOND_ORE: 15
+      EMERALD_ORE: 15
+      ANCIENT_DEBRIS: 5
+      IRON_ORE: 15
+      GOLD_ORE: 10
+      REDSTONE_ORE: 10

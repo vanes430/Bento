@@ -1,0 +1,20 @@
+{
+  "uniqueId": "default",
+  "icon": "PRISMARINE",
+  "displayName": "§2§lAcidIsland Standar",
+  "description": [
+    "§7Mulai petualanganmu di pulau",
+    "§7AcidIsland yang menantang.",
+    "§7Tersedia Overworld, Nether,",
+    "§7dan End world.",
+    "",
+    "§a§lKlik untuk memilih!"
+  ],
+  "requirePermission": false,
+  "blueprints": {
+    "NORMAL": "island",
+    "NETHER": "nether-island",
+    "THE_END": "end-island"
+  },
+  "slot": 2
+}

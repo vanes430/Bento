@@ -1,0 +1,10 @@
+name: BentoBox-Level
+main: world.bentobox.level.LevelPladdon
+version: ${project.version}${build.number}
+api-version: "1.21"
+folia-supported: true
+
+authors: [tastybento]
+contributors: ["The BentoBoxWorld Community"]
+website: https://bentobox.world
+description: ${project.description}

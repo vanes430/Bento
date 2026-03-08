@@ -1,0 +1,42 @@
+name: Level
+main: world.bentobox.level.Level
+version: ${version}${build.number}
+icon: DIAMOND
+api-version: 2.4.0
+
+authors: tastybento
+
+permissions:    
+  '[gamemode].intopten':
+    description: Player is in the top ten.
+    default: true
+  '[gamemode].island.level':
+    description: Player can use level command
+    default: true
+  '[gamemode].island.detail':
+      description: Player can use island detail command
+      default: true
+  '[gamemode].island.top':
+    description: Player can use top ten command
+    default: true
+  '[gamemode].island.value':
+    description: Player can use value command
+    default: true
+  '[gamemode].island.level.details.blocks':
+    description: Player see the level details
+    default: true 
+  '[gamemode].island.level.details.spawners':
+    description: Player can see the spawners tab in the level details
+    default: false
+  '[gamemode].island.level.details.underwater':
+    description: Player can see the underwater tab in the level details
+    default: false
+  '[gamemode].island.level.details.above-sea-level':
+    description: Player can see the above sea level tab in the level details
+    default: false
+  '[gamemode].admin.level':
+    description: Player can use admin level command
+    default: op
+  '[gamemode].admin.topten':
+    description: Player can use admin top ten command
+    default: op

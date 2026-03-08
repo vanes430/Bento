@@ -1,0 +1,63 @@
+stone-generator:
+  commands:
+    player:
+      main:
+        description: "Membuka GUI generator pulau"
+  gui:
+    titles:
+      player-panel: "&0&l Manajemen Generator Pulau"
+    buttons:
+      purchase_cost:
+        name: "&f&l Biaya Pembelian"
+        value: "&b Harga: $[number]"
+      activation_cost:
+        name: "&f&l Biaya Aktivasi"
+        value: "&b Harga: $[number]"
+      return: "&f&l Kembali"
+      quit: "&f&l Keluar"
+    descriptions:
+      generator:
+        lore: |-
+          [description]
+          [blocks]
+          [status]
+        blocks:
+          title: "&7&l Blok:"
+          value: "&8 [material] - [#.##]%"
+        status:
+          locked: "&c Terkunci!"
+          active: "&b&l AKTIF"
+          purchase-cost: "&e Biaya Upgrade: $[number]"
+          activation-cost: "&e Biaya Aktivasi: $[number]"
+  messages:
+    generator-deactivated: "&e Generator dinonaktifkan."
+    generator-activated: "&e Generator diaktifkan."
+    generator-purchased: "&a Generator berhasil di-upgrade!"
+    not-enough-money: "&c Uang Anda tidak cukup! Anda butuh $[number] tapi Anda hanya punya $[balance]"
+    owner-only: "&c Hanya Pemilik Pulau yang bisa melakukan upgrade!"
+  errors:
+    no-island: "&c Anda harus berada di pulau untuk menggunakan ini!"
+    no-generators-in-world: "&c Tidak ada generator yang tersedia."
+  ui:
+    level: "Level"
+    deactivate: "&cNonaktifkan"
+    activate: "&aAktifkan"
+    upgrade_to: "&aUpgrade ke: "
+    max_level: "&5LEVEL MAKSIMAL"
+    cost: "&eBiaya: "
+    owned: "&aDimiliki"
+    locked: "&cTerkunci - Harga: "
+    blocks_title: "&7&lBlok:"
+    status_active: "&7Status: &b&lAKTIF"
+    status_inactive: "&7Status: &c&lNONAKTIF"
+    click_to_switch: "&eKlik untuk ganti"
+    owner_only: "&6[Khusus Pemilik]"
+protection:
+  flags:
+    MAGIC_COBBLESTONE_GENERATOR:
+      name: "Generator Sihir"
+      description: "&a Aktifkan/Nonaktifkan Generator Sihir di pulau"
+      hint: "&e Generator Sihir dinonaktifkan"
+    MAGIC_COBBLESTONE_GENERATOR_PERMISSION:
+      name: "Izin Generator"
+      description: "&a Siapa yang bisa mengelola generator"

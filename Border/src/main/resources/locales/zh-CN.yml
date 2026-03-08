@@ -1,0 +1,9 @@
+border:
+  toggle:
+    description: 启用/禁用边界屏障
+    border-on: '&a边界屏障已启用.'
+    border-off: '&a边界屏障已禁用.'
+  set-type:
+    description: 更改边界屏障类型
+    changed: '&a边界屏障已更改为: &b[type]&a.'
+    error-unavailable-type: '&c该屏障类型不可用或不存在.'

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>world.bentobox</groupId>
+    <artifactId>border</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <name>Border</name>
+
+    <description>World border for islands</description>
+
+    <url>https://github.com/BentoBoxWorld/Border</url>
+    <inceptionYear>2019</inceptionYear>
+
+    <developers>
+        <developer>
+            <id>tastybento</id>
+            <email>tastybento@bentobox.world</email>
+            <timezone>-8</timezone>
+            <roles>
+                <role>Lead Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/BentoBoxWorld/Border.git</connection>
+        <developerConnection>scm:git:git@github.com:BentoBoxWorld/Border.git</developerConnection>
+        <url>https://github.com/BentoBoxWorld/Border</url>
+    </scm>
+
+    <ciManagement>
+        <system>jenkins</system>
+        <url>https://ci.codemc.org/job/BentoBoxWorld/job/Border</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/BentoBoxWorld/Border/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>bentoboxworld</id>
+            <url>https://repo.codemc.org/repository/bentoboxworld/</url>
+        </repository>
+    </distributionManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>21</java.version>
+        <!-- More visible way how to change dependency versions -->
+        <folia.version>1.21.11-R0.1-SNAPSHOT</folia.version>
+        <bentobox.version>3.11.2-SNAPSHOT-LOCAL</bentobox.version>
+        <!-- Revision variable removes warning about dynamic version -->
+        <revision>${build.version}-SNAPSHOT</revision>
+        <!-- Do not change unless you want different name for local builds. -->
+        <build.number>-LOCAL</build.number>
+        <!-- This allows to change between versions. -->
+        <build.version>4.8.1</build.version>
+        <!-- Sonar Cloud -->
+        <sonar.projectKey>BentoBoxWorld_Border</sonar.projectKey>
+        <sonar.organization>bentobox-world</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
+
+    <!-- Profiles will allow to automatically change build version. -->
+    <profiles>
+        <profile>
+            <!-- ci profile is activated if exist environment variable BUILD_NUMBER. -->
+            <!-- It replaces ${build.number} that is currently '-LOCAL' with
+                correct build number from JENKINS machine. -->
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <!-- Override only if necessary -->
+                <build.number>-b${env.BUILD_NUMBER}</build.number>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Master profile is activated if exist environment variable
+                GIT_BRANCH and its value is origin/master. -->
+            <!-- It will replace 'revision' with '${build.version}' so it
+                removes '-SNAPSHOT' string at the end. -->
+            <!-- Also, as this is release build, build number can be set
+                to empty string. -->
+            <!-- This profile will be used only if exist environment variable
+                GIT_BRANCH with value origin/master. -->
+            <id>master</id>
+            <activation>
+                <property>
+                    <name>env.GIT_BRANCH</name>
+                    <value>origin/master</value>
+                </property>
+            </activation>
+            <properties>
+                <!-- Override only if necessary -->
+                <revision>${build.version}</revision>
+                <!-- Empties build number variable. -->
+                <build.number></build.number>
+            </properties>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>papermc-public</id>
+            <name>PaperMC Official</name>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>papermc-snapshots</id>
+            <url>https://repo.papermc.io/repository/snapshots/</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/bentoboxworld/</url>
+        </repository>
+        <repository>
+            <id>EssentialsX</id>
+            <url>https://repo.essentialsx.net/releases/</url>
+        </repository>
+        <!-- CanvasMC API -->
+        <repository>
+            <id>canvasmc-snapshots</id>
+            <url>https://maven.canvasmc.io/snapshots</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Folia API -->
+        <dependency>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
+            <version>${folia.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- CanvasMC API (for portal events) -->
+        <dependency>
+            <groupId>io.canvasmc.canvas</groupId>
+            <artifactId>canvas-api</artifactId>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>world.bentobox</groupId>
+            <artifactId>bentobox</artifactId>
+            <version>${bentobox.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../BentoBox/build/libs/BentoBox-3.11.2-SNAPSHOT-LOCAL.jar</systemPath>
+        </dependency>
+        <!-- Static analysis -->
+        <!-- We are using Eclipse's annotations. If you're using IDEA, update
+            your project settings to take these into account for in real time static
+            analysis -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.annotation</artifactId>
+            <version>2.2.600</version>
+        </dependency>
+        <!-- EssentialsX -->
+        <dependency>
+            <groupId>net.essentialsx</groupId>
+            <artifactId>EssentialsX</artifactId>
+            <version>2.21.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- By default ${revision} is ${build.version}-SNAPSHOT -->
+        <!-- If GIT_BRANCH variable is set to origin/master, then it will
+            be only ${build.version}. -->
+
+        <!-- By default ${build.number} is -LOCAL. -->
+        <!-- If the BUILD_NUMBER variable is set, then it will be -b[number]. -->
+        <!-- If GIT_BRANCH variable is set to origin/master, then it will
+            be the empty string. -->
+        <finalName>${project.name}-${revision}${build.number}</finalName>
+
+        <defaultGoal>clean package</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources/locales</directory>
+                <targetPath>./locales</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <source>17</source>
+                    <show>public</show>
+                    <failOnError>false</failOnError>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <minimizeJar>false</minimizeJar>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.3</version>
+                <configuration>
+                    <java>
+                        <eclipse />
+                        <formatAnnotations />
+                    </java>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

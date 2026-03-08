@@ -1,0 +1,63 @@
+stone-generator:
+  commands:
+    player:
+      main:
+        description: "Opens island generator GUI"
+  gui:
+    titles:
+      player-panel: "&0&l Island Generator Management"
+    buttons:
+      purchase_cost:
+        name: "&f&l Purchase Cost"
+        value: "&b Cost: $[number]"
+      activation_cost:
+        name: "&f&l Activation Cost"
+        value: "&b Cost: $[number]"
+      return: "&f&l Return"
+      quit: "&f&l Quit"
+    descriptions:
+      generator:
+        lore: |-
+          [description]
+          [blocks]
+          [status]
+        blocks:
+          title: "&7&l Blocks:"
+          value: "&8 [material] - [#.##]%"
+        status:
+          locked: "&c Locked!"
+          active: "&b&l ACTIVE"
+          purchase-cost: "&e Upgrade Cost: $[number]"
+          activation-cost: "&e Activation Cost: $[number]"
+  messages:
+    generator-deactivated: "&e Generator deactivated."
+    generator-activated: "&e Generator activated."
+    generator-purchased: "&a Generator upgraded successfully!"
+    not-enough-money: "&c You don't have enough money! You need $[number] but you only have $[balance]"
+    owner-only: "&c Only the Island Owner can upgrade!"
+  errors:
+    no-island: "&c You must be on an island to use this!"
+    no-generators-in-world: "&c No generators available."
+  ui:
+    level: "Level"
+    deactivate: "&cDeactivate"
+    activate: "&aActivate"
+    upgrade_to: "&aUpgrade to: "
+    max_level: "&5MAX LEVEL"
+    cost: "&eCost: "
+    owned: "&aOwned"
+    locked: "&cLocked - Price: "
+    blocks_title: "&7&lBlocks:"
+    status_active: "&7Status: &b&lACTIVE"
+    status_inactive: "&7Status: &c&lINACTIVE"
+    click_to_switch: "&eClick to switch"
+    owner_only: "&6[Owner Only]"
+protection:
+  flags:
+    MAGIC_COBBLESTONE_GENERATOR:
+      name: "Magic Generator"
+      description: "&a Toggle Magic Generators on island"
+      hint: "&e Magic Generators are disabled"
+    MAGIC_COBBLESTONE_GENERATOR_PERMISSION:
+      name: "Generator Permissions"
+      description: "&a Who can manage generators"

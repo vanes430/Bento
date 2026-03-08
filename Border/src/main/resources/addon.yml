@@ -1,0 +1,20 @@
+name: Border
+main: world.bentobox.border.Border
+version: ${version}${build.number}
+api-version: 1.17
+icon: BEDROCK
+
+prefix: Border
+
+authors: [tastybento]
+
+permissions:
+  '[gamemode].border.toggle':
+    description: Player can use border command
+    default: op
+  '[gamemode].border.type':
+    description: Player can use border type setting command
+    default: true
+  '[gamemode].bordertype':
+    description: Player can use bordertype command to change the border type
+    default: false

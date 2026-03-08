@@ -1,0 +1,57 @@
+package world.bentobox.bentobox.listeners.flags.clicklisteners;
+
+import java.util.Objects;
+
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.event.inventory.ClickType;
+
+import world.bentobox.bentobox.BentoBox;
+import world.bentobox.bentobox.api.panels.Panel;
+import world.bentobox.bentobox.api.panels.PanelItem.ClickHandler;
+import world.bentobox.bentobox.api.panels.builders.TabbedPanelBuilder;
+import world.bentobox.bentobox.api.user.User;
+import world.bentobox.bentobox.listeners.flags.clicklisteners.GeoMobLimitTab.EntityLimitTabType;
+import world.bentobox.bentobox.managers.IslandWorldManager;
+import world.bentobox.bentobox.util.Util;
+
+/**
+ * Provide geo limiting to mobs - removed them if they go outside island bounds
+ * 
+ * @author tastybento
+ *
+ */
+public class GeoLimitClickListener implements ClickHandler {
+
+	@Override
+	public boolean onClick(Panel panel, User user, ClickType clickType, int slot) {
+		// Get the world
+		if (!user.inWorld()) {
+			user.sendMessage("general.errors.wrong-world");
+			return true;
+		}
+		World world = panel.getWorld().orElse(user.getWorld());
+		IslandWorldManager iwm = BentoBox.getInstance().getIWM();
+		World w = Objects.requireNonNull(Util.getWorld(world));
+		String reqPerm = iwm.getPermissionPrefix(w) + "admin.settings.GEO_LIMIT_MOBS";
+		if (!user.hasPermission(reqPerm)) {
+			user.sendMessage("general.errors.no-permission", "[permission]", reqPerm);
+			user.getPlayer().playSound(user.getLocation(), Sound.BLOCK_METAL_HIT, 1F, 1F);
+			return true;
+		}
+
+		// Open the Sub Settings panel
+		openPanel(user, world);
+
+		return true;
+	}
+
+	private void openPanel(User user, World world) {
+		// Close the current panel
+		user.closeInventory();
+		// Open a new panel
+		new TabbedPanelBuilder().user(user).world(world)
+				.tab(1, new GeoMobLimitTab(user, EntityLimitTabType.GEO_LIMIT, world)).startingSlot(1).size(54).build()
+				.openPanel();
+	}
+}

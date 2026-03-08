@@ -1,0 +1,21 @@
+# Custom island creation panel for AcidIsland
+island_creation_panel:
+  title: "&2&lAcidIsland &8- &7Select Island"
+  type: INVENTORY
+  rows: 3
+  border:
+    icon: GREEN_STAINED_GLASS_PANE
+    title: " "
+  content:
+    2:
+      5: blueprint_bundle_button
+  reusable:
+    blueprint_bundle_button:
+      title: acidisland.panels.island-creation.buttons.bundle.default.name
+      description: acidisland.panels.island-creation.buttons.bundle.default.description
+      data:
+        type: BUNDLE
+        unique_id: default
+      actions:
+        select:
+          click-type: UNKNOWN

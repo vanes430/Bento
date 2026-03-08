@@ -1,0 +1,24 @@
+---
+acidisland:
+  sign:
+    line0: "&1AcidIsland"
+    line1: "[name]"
+    line2: Airnya Asam!
+    line3: Hati-hati! &c<3
+  panels:
+    island-creation:
+      buttons:
+        bundle:
+          default:
+            name: "&a&lPulau Default"
+            description: |-
+              &7Bertahanlah di pulau kecil yang terapung
+              &7di samudra asam yang berbahaya!
+
+              &f Fitur:
+                &8- &7Samudra Asam Kustom
+                &8- &7Tantangan Unik
+                &8- &7Petualangan Tanpa Akhir
+
+              &eKlik untuk memulai petualanganmu!
+
