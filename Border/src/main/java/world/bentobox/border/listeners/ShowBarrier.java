@@ -34,180 +34,195 @@ import world.bentobox.border.Border;
  */
 public class ShowBarrier implements BorderShower {
 
-    private final Border addon;
-    private static final Particle PARTICLE = Enums.getIfPresent(Particle.class, "DUST")
-            .or(Enums.getIfPresent(Particle.class, "REDSTONE").or(Particle.FLAME));
-    private static final Particle MAX_PARTICLE = Enums.getIfPresent(Particle.class, "BARRIER_BLOCK")
-            .or(Enums.getIfPresent(Particle.class, "BARRIER").or(Particle.FLAME));
-    private static final Particle.DustOptions PARTICLE_DUST_RED = new Particle.DustOptions(Color.RED, 1.0F);
-    private static final Particle.DustOptions PARTICLE_DUST_BLUE = new Particle.DustOptions(Color.BLUE, 1.0F);
-    private static final int BARRIER_RADIUS = 5;
-    private final Map<UUID, Set<BarrierBlock>> barrierBlocks = new HashMap<>();
+	private final Border addon;
+	private static final Particle PARTICLE = Enums.getIfPresent(Particle.class, "DUST")
+			.or(Enums.getIfPresent(Particle.class, "REDSTONE").or(Particle.FLAME));
+	private static final Particle MAX_PARTICLE = Enums.getIfPresent(Particle.class, "BARRIER_BLOCK")
+			.or(Enums.getIfPresent(Particle.class, "BARRIER").or(Particle.FLAME));
+	private static final Particle.DustOptions PARTICLE_DUST_RED = new Particle.DustOptions(Color.RED, 1.0F);
+	private static final Particle.DustOptions PARTICLE_DUST_BLUE = new Particle.DustOptions(Color.BLUE, 1.0F);
+	private static final int BARRIER_RADIUS = 5;
+	private final Map<UUID, Set<BarrierBlock>> barrierBlocks = new HashMap<>();
 
+	/**
+	 * @param addon
+	 *            - addon
+	 */
+	public ShowBarrier(Border addon) {
+		this.addon = addon;
+	}
 
-    /**
-     * @param addon - addon
-     */
-    public ShowBarrier(Border addon) {
-        this.addon = addon;
-    }
+	/**
+	 * Show the barrier to the player on an island
+	 * 
+	 * @param player
+	 *            - player to show
+	 * @param island
+	 *            - island
+	 */
+	@Override
+	public void showBorder(Player player, Island island) {
 
-    /**
-     * Show the barrier to the player on an island
-     * @param player - player to show
-     * @param island - island
-     */
-    @Override
-    public void showBorder(Player player, Island island) {
+		if (addon.getSettings().getDisabledGameModes().contains(island.getGameMode())
+				|| !Objects.requireNonNull(User.getInstance(player)).getMetaData(BORDER_STATE_META_DATA)
+						.map(MetaDataValue::asBoolean).orElse(addon.getSettings().isShowByDefault())) {
+			return;
+		}
+		int offset = addon.getSettings().getBarrierOffset();
+		// Get the locations to show
+		Location loc = player.getLocation();
+		showWalls(player, loc, Math.max(island.getMinX(), island.getMinProtectedX() - offset),
+				Math.min(island.getMaxX(), island.getMaxProtectedX() + offset),
+				Math.max(island.getMinZ(), island.getMinProtectedZ() - offset),
+				Math.min(island.getMaxZ(), island.getMaxProtectedZ() + offset), false);
+		// If the max border needs to be shown, show it as well
+		if (addon.getSettings().isShowMaxBorder()) {
 
-        if (addon.getSettings().getDisabledGameModes().contains(island.getGameMode())
-                || !Objects.requireNonNull(User.getInstance(player)).getMetaData(BORDER_STATE_META_DATA).map(MetaDataValue::asBoolean).orElse(addon.getSettings().isShowByDefault())) {
-            return;
-        }
-        int offset = addon.getSettings().getBarrierOffset();
-        // Get the locations to show
-        Location loc = player.getLocation();
-        showWalls(player, loc,
-                Math.max(island.getMinX(), island.getMinProtectedX() - offset),
-                Math.min(island.getMaxX(), island.getMaxProtectedX() + offset),
-                Math.max(island.getMinZ(),island.getMinProtectedZ() - offset),
-                Math.min(island.getMaxZ(), island.getMaxProtectedZ() + offset), false);
-        // If the max border needs to be shown, show it as well
-        if (addon.getSettings().isShowMaxBorder()) {
+			showWalls(player, loc, island.getMinX(), island.getMaxX(), island.getMinZ(), island.getMaxZ(), true);
+		}
 
-            showWalls(player, loc,
-                    island.getMinX(),
-                    island.getMaxX(),
-                    island.getMinZ(),
-                    island.getMaxZ(), true);
-        }
+	}
 
-    }
+	private void showWalls(Player player, Location loc, int xMin, int xMax, int zMin, int zMax, boolean max) {
+		if (loc.getBlockX() - xMin < BARRIER_RADIUS) {
 
-    private void showWalls(Player player, Location loc, int xMin, int xMax, int zMin, int zMax, boolean max) {
-        if (loc.getBlockX() - xMin < BARRIER_RADIUS) {
-            
-            // Close to min x
-            for (int z = Math.max(loc.getBlockZ() - BARRIER_RADIUS, zMin); z < loc.getBlockZ() + BARRIER_RADIUS && z < zMax; z++) {
-                for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
-                    showPlayer(player, xMin-1, loc.getBlockY() + y, z, max);
-                }
-            }
-        }
-        if (loc.getBlockZ() - zMin < BARRIER_RADIUS) {
+			// Close to min x
+			for (int z = Math.max(loc.getBlockZ() - BARRIER_RADIUS, zMin); z < loc.getBlockZ() + BARRIER_RADIUS
+					&& z < zMax; z++) {
+				for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
+					showPlayer(player, xMin - 1, loc.getBlockY() + y, z, max);
+				}
+			}
+		}
+		if (loc.getBlockZ() - zMin < BARRIER_RADIUS) {
 
-            // Close to min z
-            for (int x = Math.max(loc.getBlockX() - BARRIER_RADIUS, xMin); x < loc.getBlockX() + BARRIER_RADIUS && x < xMax; x++) {
-                for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
-                    showPlayer(player, x, loc.getBlockY() + y, zMin-1, max);
-                }
-            }
-        }
-        if (xMax - loc.getBlockX() < BARRIER_RADIUS) {
+			// Close to min z
+			for (int x = Math.max(loc.getBlockX() - BARRIER_RADIUS, xMin); x < loc.getBlockX() + BARRIER_RADIUS
+					&& x < xMax; x++) {
+				for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
+					showPlayer(player, x, loc.getBlockY() + y, zMin - 1, max);
+				}
+			}
+		}
+		if (xMax - loc.getBlockX() < BARRIER_RADIUS) {
 
-            // Close to max x
-            for (int z = Math.max(loc.getBlockZ() - BARRIER_RADIUS, zMin); z < loc.getBlockZ() + BARRIER_RADIUS && z < zMax; z++) {
-                for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
-                    showPlayer(player, xMax, loc.getBlockY() + y, z, max); // not xMax+1, that's outside the region
-                }
-            }
-        }
-        if (zMax - loc.getBlockZ() < BARRIER_RADIUS) {
+			// Close to max x
+			for (int z = Math.max(loc.getBlockZ() - BARRIER_RADIUS, zMin); z < loc.getBlockZ() + BARRIER_RADIUS
+					&& z < zMax; z++) {
+				for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
+					showPlayer(player, xMax, loc.getBlockY() + y, z, max); // not xMax+1, that's outside the region
+				}
+			}
+		}
+		if (zMax - loc.getBlockZ() < BARRIER_RADIUS) {
 
-            // Close to max z
-            for (int x = Math.max(loc.getBlockX() - BARRIER_RADIUS, xMin); x < loc.getBlockX() + BARRIER_RADIUS && x < xMax; x++) {
-                for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
-                    showPlayer(player, x, loc.getBlockY() + y, zMax, max); // not zMax+1, that's outside the region
-                }
-            }
-        }
+			// Close to max z
+			for (int x = Math.max(loc.getBlockX() - BARRIER_RADIUS, xMin); x < loc.getBlockX() + BARRIER_RADIUS
+					&& x < xMax; x++) {
+				for (int y = -BARRIER_RADIUS; y < BARRIER_RADIUS; y++) {
+					showPlayer(player, x, loc.getBlockY() + y, zMax, max); // not zMax+1, that's outside the region
+				}
+			}
+		}
 
-    }
+	}
 
-    /**
-     * @param player player
-     * @param i - x
-     * @param j - y
-     * @param k - z
-     * @param max - whether this is the max border or not
-     */
-    private void showPlayer(Player player, int i, int j, int k, boolean max) {
-        // Get if on or in border
-        if (addon.getSettings().isUseBarrierBlocks()
-                && player.getLocation().getBlockX() == i
-                && player.getLocation().getBlockZ() == k) {
-            teleportEntity(player);
-        }
-        
-        Location l = new Location(player.getWorld(), i, j, k);
-        Util.getChunkAtAsync(l).thenAccept(c -> {
-            if (addon.getSettings().isShowParticles()) {
-                if (j < player.getWorld().getMinHeight() || j > player.getWorld().getMaxHeight()) {
-                    User.getInstance(player).spawnParticle(max ? MAX_PARTICLE : PARTICLE, PARTICLE_DUST_RED, i + 0.5D, j + 0.0D, k + 0.5D);
-                } else {
-                    User.getInstance(player).spawnParticle(max ? MAX_PARTICLE : PARTICLE, PARTICLE_DUST_BLUE, i + 0.5D, j + 0.0D, k + 0.5D);
-                }
-            }
-            if (addon.getSettings().isUseBarrierBlocks() && (l.getBlock().isEmpty() || l.getBlock().isLiquid())) {
-                player.sendBlockChange(l, Material.BARRIER.createBlockData());
-                barrierBlocks.computeIfAbsent(player.getUniqueId(), u -> new HashSet<>()).add(new BarrierBlock(l, l.getBlock().getBlockData()));
-            }
-        });
-    }
+	/**
+	 * @param player
+	 *            player
+	 * @param i
+	 *            - x
+	 * @param j
+	 *            - y
+	 * @param k
+	 *            - z
+	 * @param max
+	 *            - whether this is the max border or not
+	 */
+	private void showPlayer(Player player, int i, int j, int k, boolean max) {
+		// Get if on or in border
+		if (addon.getSettings().isUseBarrierBlocks() && player.getLocation().getBlockX() == i
+				&& player.getLocation().getBlockZ() == k) {
+			teleportEntity(player);
+		}
 
-    /**
-     * Teleport player back within the island space they are in
-     * @param entity player or entity
-     */
-    public void teleportEntity(Entity entity) {
-        addon.getIslands().getIslandAt(entity.getLocation()).ifPresent(i -> {
-            Vector unitVector = i.getCenter().toVector().subtract(entity.getLocation().toVector()).normalize()
-                    .multiply(new Vector(1, 0, 1));
-            // Get distance from border
-            Location to = entity.getLocation().toVector().add(unitVector).toLocation(entity.getWorld());
-            to.setPitch(entity.getLocation().getPitch());
-            to.setYaw(entity.getLocation().getYaw());
-            Util.teleportAsync(entity, to, TeleportCause.PLUGIN);
-        });
-    }
+		Location l = new Location(player.getWorld(), i, j, k);
+		Util.getChunkAtAsync(l).thenAccept(c -> {
+			if (addon.getSettings().isShowParticles()) {
+				if (j < player.getWorld().getMinHeight() || j > player.getWorld().getMaxHeight()) {
+					User.getInstance(player).spawnParticle(max ? MAX_PARTICLE : PARTICLE, PARTICLE_DUST_RED, i + 0.5D,
+							j + 0.0D, k + 0.5D);
+				} else {
+					User.getInstance(player).spawnParticle(max ? MAX_PARTICLE : PARTICLE, PARTICLE_DUST_BLUE, i + 0.5D,
+							j + 0.0D, k + 0.5D);
+				}
+			}
+			if (addon.getSettings().isUseBarrierBlocks() && (l.getBlock().isEmpty() || l.getBlock().isLiquid())) {
+				player.sendBlockChange(l, Material.BARRIER.createBlockData());
+				barrierBlocks.computeIfAbsent(player.getUniqueId(), u -> new HashSet<>())
+						.add(new BarrierBlock(l, l.getBlock().getBlockData()));
+			}
+		});
+	}
 
-    /**
-     * Hide the barrier
-     * @param user - user
-     */
-    @Override
-    public void hideBorder(User user) {
-        if (barrierBlocks.containsKey(user.getUniqueId())) {
-            barrierBlocks.get(user.getUniqueId()).stream()
-            .filter(v -> v.l.getWorld().equals(user.getWorld()))
-            .forEach(v -> user.getPlayer().sendBlockChange(v.l, v.oldBlockData));
-            // Clean up
-            clearUser(user);
-        }
-    }
+	/**
+	 * Teleport player back within the island space they are in
+	 * 
+	 * @param entity
+	 *            player or entity
+	 */
+	public void teleportEntity(Entity entity) {
+		addon.getIslands().getIslandAt(entity.getLocation()).ifPresent(i -> {
+			Vector unitVector = i.getCenter().toVector().subtract(entity.getLocation().toVector()).normalize()
+					.multiply(new Vector(1, 0, 1));
+			// Get distance from border
+			Location to = entity.getLocation().toVector().add(unitVector).toLocation(entity.getWorld());
+			to.setPitch(entity.getLocation().getPitch());
+			to.setYaw(entity.getLocation().getYaw());
+			Util.teleportAsync(entity, to, TeleportCause.PLUGIN);
+		});
+	}
 
-    /**
-     * Removes any cached barrier blocks
-     * @param user - user
-     */
-    @Override
-    public void clearUser(User user) {
-        barrierBlocks.remove(user.getUniqueId());
-    }
+	/**
+	 * Hide the barrier
+	 * 
+	 * @param user
+	 *            - user
+	 */
+	@Override
+	public void hideBorder(User user) {
+		if (barrierBlocks.containsKey(user.getUniqueId())) {
+			barrierBlocks.get(user.getUniqueId()).stream().filter(v -> v.l.getWorld().equals(user.getWorld()))
+					.forEach(v -> user.getPlayer().sendBlockChange(v.l, v.oldBlockData));
+			// Clean up
+			clearUser(user);
+		}
+	}
 
-    @Override
-    public void refreshView(User user, Island island) {
-        this.showBorder(user.getPlayer(), island);
-    }
+	/**
+	 * Removes any cached barrier blocks
+	 * 
+	 * @param user
+	 *            - user
+	 */
+	@Override
+	public void clearUser(User user) {
+		barrierBlocks.remove(user.getUniqueId());
+	}
 
-    private static class BarrierBlock {
-        Location l;
-        BlockData oldBlockData;
-        public BarrierBlock(Location l, BlockData oldBlockData) {
-            super();
-            this.l = l;
-            this.oldBlockData = oldBlockData;
-        }
+	@Override
+	public void refreshView(User user, Island island) {
+		this.showBorder(user.getPlayer(), island);
+	}
 
-    }
+	private static class BarrierBlock {
+		Location l;
+		BlockData oldBlockData;
+		public BarrierBlock(Location l, BlockData oldBlockData) {
+			super();
+			this.l = l;
+			this.oldBlockData = oldBlockData;
+		}
+
+	}
 }

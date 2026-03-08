@@ -727,8 +727,7 @@ public class DetailsPanel {
 			if (!m.isItem()) {
 				m = convertItem(m);
 			}
-			return new BlockDataRec(new ItemStack(m),
-					this.user.getTranslationOrNothing(ref + "id", "[id]", m.name()),
+			return new BlockDataRec(new ItemStack(m), this.user.getTranslationOrNothing(ref + "id", "[id]", m.name()),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getValue(world, m), 0),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getLimit(m), 0),
 					Utils.prettifyObject(key, this.user), "");

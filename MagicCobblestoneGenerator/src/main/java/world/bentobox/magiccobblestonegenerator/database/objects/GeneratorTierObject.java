@@ -18,42 +18,87 @@ import world.bentobox.bentobox.database.objects.Table;
  */
 @Table(name = "GeneratorTier")
 public class GeneratorTierObject implements DataObject {
-	public GeneratorTierObject() {}
+	public GeneratorTierObject() {
+	}
 
 	@Override
-	public String getUniqueId() { return this.uniqueId; }
+	public String getUniqueId() {
+		return this.uniqueId;
+	}
 	@Override
-	public void setUniqueId(String uniqueId) { this.uniqueId = uniqueId; }
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
 
-	public String getFriendlyName() { return friendlyName; }
-	public void setFriendlyName(String friendlyName) { this.friendlyName = friendlyName; }
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
 
-	public List<String> getDescription() { return description; }
-	public void setDescription(List<String> description) { this.description = description; }
+	public List<String> getDescription() {
+		return description;
+	}
+	public void setDescription(List<String> description) {
+		this.description = description;
+	}
 
-	public ItemStack getGeneratorIcon() { return generatorIcon.clone(); }
-	public void setGeneratorIcon(ItemStack generatorIcon) { this.generatorIcon = generatorIcon; }
+	public ItemStack getGeneratorIcon() {
+		return generatorIcon.clone();
+	}
+	public void setGeneratorIcon(ItemStack generatorIcon) {
+		this.generatorIcon = generatorIcon;
+	}
 
-	public GeneratorType getGeneratorType() { return generatorType; }
-	public void setGeneratorType(GeneratorType generatorType) { this.generatorType = generatorType; }
+	public GeneratorType getGeneratorType() {
+		return generatorType;
+	}
+	public void setGeneratorType(GeneratorType generatorType) {
+		this.generatorType = generatorType;
+	}
 
-	public boolean isDefaultGenerator() { return defaultGenerator; }
-	public void setDefaultGenerator(boolean defaultGenerator) { this.defaultGenerator = defaultGenerator; }
+	public boolean isDefaultGenerator() {
+		return defaultGenerator;
+	}
+	public void setDefaultGenerator(boolean defaultGenerator) {
+		this.defaultGenerator = defaultGenerator;
+	}
 
-	public int getPriority() { return priority; }
-	public void setPriority(int priority) { this.priority = priority; }
+	public int getPriority() {
+		return priority;
+	}
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 
-	public double getGeneratorTierCost() { return generatorTierCost; }
-	public void setGeneratorTierCost(double generatorTierCost) { this.generatorTierCost = generatorTierCost; }
+	public double getGeneratorTierCost() {
+		return generatorTierCost;
+	}
+	public void setGeneratorTierCost(double generatorTierCost) {
+		this.generatorTierCost = generatorTierCost;
+	}
 
-	public double getActivationCost() { return activationCost; }
-	public void setActivationCost(double activationCost) { this.activationCost = activationCost; }
+	public double getActivationCost() {
+		return activationCost;
+	}
+	public void setActivationCost(double activationCost) {
+		this.activationCost = activationCost;
+	}
 
-	public boolean isDeployed() { return deployed; }
-	public void setDeployed(boolean deployed) { this.deployed = deployed; }
+	public boolean isDeployed() {
+		return deployed;
+	}
+	public void setDeployed(boolean deployed) {
+		this.deployed = deployed;
+	}
 
-	public TreeMap<Double, Material> getBlockChanceMap() { return blockChanceMap; }
-	public void setBlockChanceMap(TreeMap<Double, Material> blockChanceMap) { this.blockChanceMap = blockChanceMap; }
+	public TreeMap<Double, Material> getBlockChanceMap() {
+		return blockChanceMap;
+	}
+	public void setBlockChanceMap(TreeMap<Double, Material> blockChanceMap) {
+		this.blockChanceMap = blockChanceMap;
+	}
 
 	@Override
 	public GeneratorTierObject clone() {
@@ -73,21 +118,37 @@ public class GeneratorTierObject implements DataObject {
 	}
 
 	public enum GeneratorType {
-		COBBLESTONE(1), STONE(2), BASALT(4), COBBLESTONE_OR_STONE(3), BASALT_OR_COBBLESTONE(5), BASALT_OR_STONE(6), ANY(7);
-		GeneratorType(int id) { this.id = id; }
-		public boolean includes(GeneratorType type) { return (this.id & type.id) != 0; }
+		COBBLESTONE(1), STONE(2), BASALT(4), COBBLESTONE_OR_STONE(3), BASALT_OR_COBBLESTONE(5), BASALT_OR_STONE(6), ANY(
+				7);
+		GeneratorType(int id) {
+			this.id = id;
+		}
+		public boolean includes(GeneratorType type) {
+			return (this.id & type.id) != 0;
+		}
 		private final int id;
 	}
 
-	@Expose private String uniqueId;
-	@Expose private String friendlyName;
-	@Expose private List<String> description = Collections.emptyList();
-	@Expose private ItemStack generatorIcon = new ItemStack(Material.STONE);
-	@Expose private GeneratorType generatorType = GeneratorType.COBBLESTONE;
-	@Expose private boolean defaultGenerator = false;
-	@Expose private int priority = 0;
-	@Expose private double generatorTierCost = 0.0;
-	@Expose private double activationCost = 0.0;
-	@Expose private boolean deployed = true;
-	@Expose private TreeMap<Double, Material> blockChanceMap = new TreeMap<>();
+	@Expose
+	private String uniqueId;
+	@Expose
+	private String friendlyName;
+	@Expose
+	private List<String> description = Collections.emptyList();
+	@Expose
+	private ItemStack generatorIcon = new ItemStack(Material.STONE);
+	@Expose
+	private GeneratorType generatorType = GeneratorType.COBBLESTONE;
+	@Expose
+	private boolean defaultGenerator = false;
+	@Expose
+	private int priority = 0;
+	@Expose
+	private double generatorTierCost = 0.0;
+	@Expose
+	private double activationCost = 0.0;
+	@Expose
+	private boolean deployed = true;
+	@Expose
+	private TreeMap<Double, Material> blockChanceMap = new TreeMap<>();
 }

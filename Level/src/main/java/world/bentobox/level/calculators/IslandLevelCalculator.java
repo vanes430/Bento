@@ -698,11 +698,10 @@ public class IslandLevelCalculator {
 				BentoBox.getInstance().log("Completed Level scan.");
 				// Chunk finished
 				// This was the last chunk. Handle spawners, chests and exit
-				handleSpawners().thenCompose(v -> handleChests())
-						.thenRun(() -> {
-							this.tidyUp();
-							this.getR().complete(getResults());
-						});
+				handleSpawners().thenCompose(v -> handleChests()).thenRun(() -> {
+					this.tidyUp();
+					this.getR().complete(getResults());
+				});
 			}
 		});
 	}

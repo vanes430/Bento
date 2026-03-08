@@ -10,19 +10,36 @@ import world.bentobox.bentobox.api.configuration.StoreAt;
 @StoreAt(filename = "config.yml", path = "addons/MagicCobblestoneGenerator")
 @ConfigComment("Simplified MagicCobblestoneGenerator Configuration")
 public class Settings implements ConfigObject {
-	public Settings() {}
+	public Settings() {
+	}
 
-	public int getDefaultActiveGeneratorCount() { return defaultActiveGeneratorCount; }
-	public void setDefaultActiveGeneratorCount(int count) { this.defaultActiveGeneratorCount = count; }
+	public int getDefaultActiveGeneratorCount() {
+		return defaultActiveGeneratorCount;
+	}
+	public void setDefaultActiveGeneratorCount(int count) {
+		this.defaultActiveGeneratorCount = count;
+	}
 
-	public Set<String> getDisabledGameModes() { return disabledGameModes; }
-	public void setDisabledGameModes(Set<String> modes) { this.disabledGameModes = modes; }
+	public Set<String> getDisabledGameModes() {
+		return disabledGameModes;
+	}
+	public void setDisabledGameModes(Set<String> modes) {
+		this.disabledGameModes = modes;
+	}
 
-	public String getPlayerMainCommand() { return playerMainCommand; }
-	public void setPlayerMainCommand(String cmd) { this.playerMainCommand = cmd; }
+	public String getPlayerMainCommand() {
+		return playerMainCommand;
+	}
+	public void setPlayerMainCommand(String cmd) {
+		this.playerMainCommand = cmd;
+	}
 
-	public String getAdminMainCommand() { return adminMainCommand; }
-	public void setAdminMainCommand(String cmd) { this.adminMainCommand = cmd; }
+	public String getAdminMainCommand() {
+		return adminMainCommand;
+	}
+	public void setAdminMainCommand(String cmd) {
+		this.adminMainCommand = cmd;
+	}
 
 	@ConfigComment("Maximum active generators per island. (Default 1)")
 	@ConfigEntry(path = "default-active-generators")

@@ -20,7 +20,8 @@ public class GeneratorPlayerCommand extends CompositeCommand {
 
 	@Override
 	public boolean canExecute(User user, String label, List<String> args) {
-		world.bentobox.bentobox.database.objects.Island island = this.addon.getIslands().getIsland(this.getWorld(), user);
+		world.bentobox.bentobox.database.objects.Island island = this.addon.getIslands().getIsland(this.getWorld(),
+				user);
 		if (island == null) {
 			user.sendMessage("general.errors.no-island");
 			return false;

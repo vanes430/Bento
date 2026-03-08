@@ -19,9 +19,11 @@ public class MagicGenerator {
 	}
 
 	public @Nullable Material processBlockReplacement(@Nullable GeneratorTierObject tier, Location loc) {
-		if (tier == null) return null;
+		if (tier == null)
+			return null;
 		TreeMap<Double, Material> chanceMap = tier.getBlockChanceMap();
-		if (chanceMap.isEmpty()) return null;
+		if (chanceMap.isEmpty())
+			return null;
 
 		double rand = this.random.nextDouble() * chanceMap.lastKey();
 		return chanceMap.ceilingEntry(rand).getValue();

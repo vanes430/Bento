@@ -13,26 +13,35 @@ import world.bentobox.magiccobblestonegenerator.database.objects.GeneratorTierOb
 
 public class VanillaGeneratorListener implements Listener {
 	private final StoneGeneratorAddon addon;
-	public VanillaGeneratorListener(StoneGeneratorAddon addon) { this.addon = addon; }
+	public VanillaGeneratorListener(StoneGeneratorAddon addon) {
+		this.addon = addon;
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockFormEvent(BlockFormEvent event) {
 		Block block = event.getBlock();
-		if (!block.isLiquid() || !this.addon.getAddonManager().canOperate(block.getWorld())) return;
+		if (!block.isLiquid() || !this.addon.getAddonManager().canOperate(block.getWorld()))
+			return;
 
 		Optional<Island> island = this.addon.getIslands().getIslandAt(block.getLocation());
-		if (island.isEmpty() || !island.get().isAllowed(StoneGeneratorAddon.MAGIC_COBBLESTONE_GENERATOR)) return;
+		if (island.isEmpty() || !island.get().isAllowed(StoneGeneratorAddon.MAGIC_COBBLESTONE_GENERATOR))
+			return;
 
 		Material type = event.getNewState().getType();
 		GeneratorTierObject.GeneratorType gType = null;
-		if (type == Material.COBBLESTONE) gType = GeneratorTierObject.GeneratorType.COBBLESTONE;
-		else if (type == Material.STONE) gType = GeneratorTierObject.GeneratorType.STONE;
-		else if (type == Material.BASALT) gType = GeneratorTierObject.GeneratorType.BASALT;
+		if (type == Material.COBBLESTONE)
+			gType = GeneratorTierObject.GeneratorType.COBBLESTONE;
+		else if (type == Material.STONE)
+			gType = GeneratorTierObject.GeneratorType.STONE;
+		else if (type == Material.BASALT)
+			gType = GeneratorTierObject.GeneratorType.BASALT;
 
 		if (gType != null) {
-			GeneratorTierObject tier = this.addon.getAddonManager().getGeneratorTier(island.get(), block.getLocation(), gType);
+			GeneratorTierObject tier = this.addon.getAddonManager().getGeneratorTier(island.get(), block.getLocation(),
+					gType);
 			Material replacement = this.addon.getGenerator().processBlockReplacement(tier, block.getLocation());
-			if (replacement != null && replacement.isBlock()) event.getNewState().setType(replacement);
+			if (replacement != null && replacement.isBlock())
+				event.getNewState().setType(replacement);
 		}
 	}
 }

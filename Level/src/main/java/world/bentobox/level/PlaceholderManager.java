@@ -503,9 +503,9 @@ public class PlaceholderManager {
 	 * identifier object used by IslandLevels.
 	 *
 	 * - Handles "pig_spawner" style keys and resolves them to EntityType where
-	 * possible. - Resolves namespaced Material keys using Bukkit's Registry.
-	 * - Returns Material.SPAWNER for generic "spawner" key, otherwise
-	 * null if unresolvable.
+	 * possible. - Resolves namespaced Material keys using Bukkit's Registry. -
+	 * Returns Material.SPAWNER for generic "spawner" key, otherwise null if
+	 * unresolvable.
 	 *
 	 * @param configKey
 	 *            The key string from block config.

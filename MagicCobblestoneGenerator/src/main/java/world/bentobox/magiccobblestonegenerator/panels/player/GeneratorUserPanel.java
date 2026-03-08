@@ -36,7 +36,8 @@ public class GeneratorUserPanel extends Panel {
 
 	public static void openPanel(StoneGeneratorAddon addon, World world, User user) {
 		if (user.isPlayer()) {
-			user.getPlayer().getScheduler().run(addon.getPlugin(), task -> new GeneratorUserPanel(addon, world, user), null);
+			user.getPlayer().getScheduler().run(addon.getPlugin(), task -> new GeneratorUserPanel(addon, world, user),
+					null);
 		} else {
 			new GeneratorUserPanel(addon, world, user);
 		}

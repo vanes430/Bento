@@ -24,13 +24,16 @@ public class StoneGeneratorImportManager {
 	}
 
 	public void importFile(File file, World world) {
-		String gm = this.addon.getPlugin().getIWM().getAddon(world).map(a -> a.getDescription().getName().toLowerCase()).orElse("unknown");
+		String gm = this.addon.getPlugin().getIWM().getAddon(world).map(a -> a.getDescription().getName().toLowerCase())
+				.orElse("unknown");
 		File template = file != null ? file : new File(this.addon.getDataFolder(), "generator.yml");
-		if (!template.exists()) return;
+		if (!template.exists())
+			return;
 
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(template);
 		ConfigurationSection tiers = config.getConfigurationSection("tiers");
-		if (tiers == null) return;
+		if (tiers == null)
+			return;
 
 		for (String key : tiers.getKeys(false)) {
 			ConfigurationSection s = tiers.getConfigurationSection(key);

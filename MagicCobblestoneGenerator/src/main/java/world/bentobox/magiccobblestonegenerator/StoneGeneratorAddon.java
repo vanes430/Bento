@@ -38,12 +38,15 @@ public class StoneGeneratorAddon extends Addon {
 	}
 
 	@Override
-	public void onDisable() {}
+	public void onDisable() {
+	}
 
 	private void hookIntoGameMode(GameModeAddon gameMode) {
 		this.stoneGeneratorManager.addWorld(gameMode.getOverWorld());
-		if (gameMode.getWorldSettings().isNetherIslands()) this.stoneGeneratorManager.addWorld(gameMode.getNetherWorld());
-		if (gameMode.getWorldSettings().isEndIslands()) this.stoneGeneratorManager.addWorld(gameMode.getEndWorld());
+		if (gameMode.getWorldSettings().isNetherIslands())
+			this.stoneGeneratorManager.addWorld(gameMode.getNetherWorld());
+		if (gameMode.getWorldSettings().isEndIslands())
+			this.stoneGeneratorManager.addWorld(gameMode.getEndWorld());
 		MAGIC_COBBLESTONE_GENERATOR.addGameModeAddon(gameMode);
 		MAGIC_COBBLESTONE_GENERATOR_PERMISSION.addGameModeAddon(gameMode);
 		gameMode.getPlayerCommand().ifPresent(pc -> new GeneratorPlayerCommand(this, pc));
@@ -53,12 +56,24 @@ public class StoneGeneratorAddon extends Addon {
 		}
 	}
 
-	public Settings getSettings() { return this.settings; }
-	public MagicGenerator getGenerator() { return this.generator; }
-	public StoneGeneratorManager getAddonManager() { return this.stoneGeneratorManager; }
-	public StoneGeneratorImportManager getImportManager() { return this.stoneGeneratorImportManager; }
-	public boolean isVaultProvided() { return this.getPlugin().getVault().isPresent(); }
-	public static StoneGeneratorAddon getInstance() { return instance; }
+	public Settings getSettings() {
+		return this.settings;
+	}
+	public MagicGenerator getGenerator() {
+		return this.generator;
+	}
+	public StoneGeneratorManager getAddonManager() {
+		return this.stoneGeneratorManager;
+	}
+	public StoneGeneratorImportManager getImportManager() {
+		return this.stoneGeneratorImportManager;
+	}
+	public boolean isVaultProvided() {
+		return this.getPlugin().getVault().isPresent();
+	}
+	public static StoneGeneratorAddon getInstance() {
+		return instance;
+	}
 
 	private Settings settings;
 	private StoneGeneratorManager stoneGeneratorManager;
@@ -71,5 +86,8 @@ public class StoneGeneratorAddon extends Addon {
 
 	public final static Flag MAGIC_COBBLESTONE_GENERATOR_PERMISSION = new Flag.Builder(
 			"MAGIC_COBBLESTONE_GENERATOR_PERMISSION", Material.DIAMOND_PICKAXE).type(Flag.Type.PROTECTION)
-			.defaultRank(RanksManager.SUB_OWNER_RANK).clickHandler(new CycleClick("MAGIC_COBBLESTONE_GENERATOR_PERMISSION", RanksManager.MEMBER_RANK, RanksManager.OWNER_RANK)).build();
+			.defaultRank(RanksManager.SUB_OWNER_RANK)
+			.clickHandler(new CycleClick("MAGIC_COBBLESTONE_GENERATOR_PERMISSION", RanksManager.MEMBER_RANK,
+					RanksManager.OWNER_RANK))
+			.build();
 }

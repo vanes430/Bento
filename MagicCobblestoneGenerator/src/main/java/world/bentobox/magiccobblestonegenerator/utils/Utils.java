@@ -16,7 +16,8 @@ public class Utils {
 	}
 
 	public static String prettifyObject(Object object) {
-		if (object == null) return "None";
+		if (object == null)
+			return "None";
 		String name = object.toString().toLowerCase().replace("_", " ");
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}

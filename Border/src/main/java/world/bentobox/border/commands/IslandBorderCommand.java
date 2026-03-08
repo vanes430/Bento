@@ -12,54 +12,54 @@ import world.bentobox.border.listeners.BorderShower;
 
 public class IslandBorderCommand extends CompositeCommand {
 
-    public static final String BORDER_COMMAND_PERM = "border.toggle";
-    private final Border addon;
-    private Island island;
+	public static final String BORDER_COMMAND_PERM = "border.toggle";
+	private final Border addon;
+	private Island island;
 
-    public IslandBorderCommand(Border addon, CompositeCommand parent, String label) {
-        super(addon, parent, label);
-        this.addon = addon;
-    }
+	public IslandBorderCommand(Border addon, CompositeCommand parent, String label) {
+		super(addon, parent, label);
+		this.addon = addon;
+	}
 
-    @Override
-    public void setup() {
-        this.setPermission(BORDER_COMMAND_PERM);
-        this.setDescription("border.toggle.description");
-        this.setOnlyPlayer(true);
-        setConfigurableRankCommand();
+	@Override
+	public void setup() {
+		this.setPermission(BORDER_COMMAND_PERM);
+		this.setDescription("border.toggle.description");
+		this.setOnlyPlayer(true);
+		setConfigurableRankCommand();
 
-        new BorderTypeCommand(this.getAddon(), this, "type");
-        new BorderColorCommand(this.getAddon(), this, "color");
-    }
+		new BorderTypeCommand(this.getAddon(), this, "type");
+		new BorderColorCommand(this.getAddon(), this, "color");
+	}
 
-    @Override
-    public boolean canExecute(User user, String label, List<String> args) {
-        if (!this.getWorld().equals(Util.getWorld(user.getWorld())))
-        {
-            user.sendMessage("general.errors.wrong-world");
-            return false;
-        }
-        island = addon.getIslands().getIslandAt(user.getLocation()).orElse(null);
-        return island != null;
-    }
+	@Override
+	public boolean canExecute(User user, String label, List<String> args) {
+		if (!this.getWorld().equals(Util.getWorld(user.getWorld()))) {
+			user.sendMessage("general.errors.wrong-world");
+			return false;
+		}
+		island = addon.getIslands().getIslandAt(user.getLocation()).orElse(null);
+		return island != null;
+	}
 
-    @Override
-    public boolean execute(User user, String label, List<String> args) {
-        boolean on = user.getMetaData(BorderShower.BORDER_STATE_META_DATA).map(MetaDataValue::asBoolean).orElse(addon.getSettings().isShowByDefault());
-        if (on) {
-            user.sendMessage("border.toggle.border-off");
-            user.putMetaData(BorderShower.BORDER_STATE_META_DATA, new MetaDataValue(false));
-            addon.getPlayers().savePlayer(user.getUniqueId());
-            addon.getBorderShower().hideBorder(user);
-        } else {
-            user.sendMessage("border.toggle.border-on");
-            user.putMetaData(BorderShower.BORDER_STATE_META_DATA, new MetaDataValue(true));
-            addon.getPlayers().savePlayer(user.getUniqueId());
-            if (island != null) {
-                addon.getBorderShower().showBorder(user.getPlayer(), island);
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean execute(User user, String label, List<String> args) {
+		boolean on = user.getMetaData(BorderShower.BORDER_STATE_META_DATA).map(MetaDataValue::asBoolean)
+				.orElse(addon.getSettings().isShowByDefault());
+		if (on) {
+			user.sendMessage("border.toggle.border-off");
+			user.putMetaData(BorderShower.BORDER_STATE_META_DATA, new MetaDataValue(false));
+			addon.getPlayers().savePlayer(user.getUniqueId());
+			addon.getBorderShower().hideBorder(user);
+		} else {
+			user.sendMessage("border.toggle.border-on");
+			user.putMetaData(BorderShower.BORDER_STATE_META_DATA, new MetaDataValue(true));
+			addon.getPlayers().savePlayer(user.getUniqueId());
+			if (island != null) {
+				addon.getBorderShower().showBorder(user.getPlayer(), island);
+			}
+		}
+		return true;
+	}
 
 }

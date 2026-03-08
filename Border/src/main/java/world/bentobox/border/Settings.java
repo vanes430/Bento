@@ -11,228 +11,238 @@ import world.bentobox.bentobox.api.configuration.StoreAt;
 @StoreAt(filename = "config.yml", path = "addons/Border")
 public class Settings implements ConfigObject {
 
-    @ConfigComment("Border addon configuration file")
-    @ConfigComment("See the documentation at https://docs.bentobox.world/en/latest/addons/Border/")
-    @ConfigComment("")
-    @ConfigComment("This list stores GameModes in which Border addon should not work.")
-    @ConfigComment("To disable addon it is necessary to write its name in new line that starts with -. Example:")
-    @ConfigComment("disabled-gamemodes:")
-    @ConfigComment(" - BSkyBlock")
-    @ConfigEntry(path = "disabled-gamemodes")
-    private Set<String> disabledGameModes = new HashSet<>();
+	@ConfigComment("Border addon configuration file")
+	@ConfigComment("See the documentation at https://docs.bentobox.world/en/latest/addons/Border/")
+	@ConfigComment("")
+	@ConfigComment("This list stores GameModes in which Border addon should not work.")
+	@ConfigComment("To disable addon it is necessary to write its name in new line that starts with -. Example:")
+	@ConfigComment("disabled-gamemodes:")
+	@ConfigComment(" - BSkyBlock")
+	@ConfigEntry(path = "disabled-gamemodes")
+	private Set<String> disabledGameModes = new HashSet<>();
 
-    @ConfigComment("")
-    @ConfigComment("Border type. Options are VANILLA, which uses the vanilla-style boarder or BARRIER,")
-    @ConfigComment("which uses particles and barrier blocks. If players have permission to use the barrier type")
-    @ConfigComment("they may override this option. If they do not have permission or lose the permission")
-    @ConfigComment("then this setting will be used.")
-    @ConfigEntry(path = "type")
-    private BorderType type = BorderType.VANILLA;
+	@ConfigComment("")
+	@ConfigComment("Border type. Options are VANILLA, which uses the vanilla-style boarder or BARRIER,")
+	@ConfigComment("which uses particles and barrier blocks. If players have permission to use the barrier type")
+	@ConfigComment("they may override this option. If they do not have permission or lose the permission")
+	@ConfigComment("then this setting will be used.")
+	@ConfigEntry(path = "type")
+	private BorderType type = BorderType.VANILLA;
 
-    public enum BorderColor {
-        RED, GREEN, BLUE
-    }
-    @ConfigComment("")
-    @ConfigComment("Vanilla border color. Only applies if the border type is VANILLA.")
-    @ConfigComment("Selection is RED, GREEN, BLUE.")
-    @ConfigEntry(path = "color")
-    private BorderColor color = BorderColor.BLUE;
+	public enum BorderColor {
+		RED, GREEN, BLUE
+	}
+	@ConfigComment("")
+	@ConfigComment("Vanilla border color. Only applies if the border type is VANILLA.")
+	@ConfigComment("Selection is RED, GREEN, BLUE.")
+	@ConfigEntry(path = "color")
+	private BorderColor color = BorderColor.BLUE;
 
-    @ConfigComment("")
-    @ConfigComment("Bounce items back inside the border if they are thrown by a player.")
-    @ConfigComment("Without this, items can be thrown outside the border.")
-    @ConfigEntry(path = "bounce-back")
-    private boolean bounceBack = false;
+	@ConfigComment("")
+	@ConfigComment("Bounce items back inside the border if they are thrown by a player.")
+	@ConfigComment("Without this, items can be thrown outside the border.")
+	@ConfigEntry(path = "bounce-back")
+	private boolean bounceBack = false;
 
-    @ConfigComment("")
-    @ConfigComment("Teleport players back inside the border if they somehow get outside.")
-    @ConfigComment("This will teleport players back inside if they toggle the border with a command.")
-    @ConfigEntry(path = "return-teleport")
-    private boolean returnTeleport = false;
+	@ConfigComment("")
+	@ConfigComment("Teleport players back inside the border if they somehow get outside.")
+	@ConfigComment("This will teleport players back inside if they toggle the border with a command.")
+	@ConfigEntry(path = "return-teleport")
+	private boolean returnTeleport = false;
 
-    @ConfigComment("")
-    @ConfigComment("Place a safety block under the player if they get teleported back into a non-safe spot.")
-    @ConfigEntry(path = "return-teleport-safety-block")
-    private boolean returnTeleportBlock = false;
+	@ConfigComment("")
+	@ConfigComment("Place a safety block under the player if they get teleported back into a non-safe spot.")
+	@ConfigEntry(path = "return-teleport-safety-block")
+	private boolean returnTeleportBlock = false;
 
-    @ConfigComment("")
-    @ConfigComment("Barrier blocks on/off. Only applies if the border type is BARRIER.")
-    @ConfigComment("If false, the border is indicated by particles only.")
-    @ConfigEntry(path = "use-barrier-blocks")
-    private boolean useBarrierBlocks = false;
+	@ConfigComment("")
+	@ConfigComment("Barrier blocks on/off. Only applies if the border type is BARRIER.")
+	@ConfigComment("If false, the border is indicated by particles only.")
+	@ConfigEntry(path = "use-barrier-blocks")
+	private boolean useBarrierBlocks = false;
 
-    @ConfigComment("")
-    @ConfigComment("Turn on barrier by default.")
-    @ConfigEntry(path = "show-by-default")
-    private boolean showByDefault = true;
+	@ConfigComment("")
+	@ConfigComment("Turn on barrier by default.")
+	@ConfigEntry(path = "show-by-default")
+	private boolean showByDefault = true;
 
-    @ConfigComment("")
-    @ConfigComment("Only applies if VANILLA type isn't used.")
-    @ConfigComment("Show max-protection range border. This is a visual border only and not a barrier.")
-    @ConfigComment("This setting is useful for game modes where the protection range can move around, like Boxed")
-    @ConfigEntry(path = "show-max-border")
-    private boolean showMaxBorder = false;
+	@ConfigComment("")
+	@ConfigComment("Only applies if VANILLA type isn't used.")
+	@ConfigComment("Show max-protection range border. This is a visual border only and not a barrier.")
+	@ConfigComment("This setting is useful for game modes where the protection range can move around, like Boxed")
+	@ConfigEntry(path = "show-max-border")
+	private boolean showMaxBorder = false;
 
-    @ConfigComment("")
-    @ConfigComment("Only applies if VANILLA type isn't used.")
-    @ConfigComment("Enables/disables all types of wall particles shown by the addon")
-    @ConfigEntry(path = "show-particles")
-    private boolean showParticles = false;
+	@ConfigComment("")
+	@ConfigComment("Only applies if VANILLA type isn't used.")
+	@ConfigComment("Enables/disables all types of wall particles shown by the addon")
+	@ConfigEntry(path = "show-particles")
+	private boolean showParticles = false;
 
-    @ConfigComment("")
-    @ConfigComment("Barrier offset.")
-    @ConfigComment("The barrier normally occurs at the protection range limit but this value extends it outwards.")
-    @ConfigComment("This does not extend the protection range, but will enable players to go outside their protected area.")
-    @ConfigComment("The barrier will not go further than the island distance. Minimum and default value is 0.")
-    @ConfigEntry(path = "barrier-offset")
-    private int barrierOffset = 0;
-    
-    /**
-     * @param disabledGameModes new disabledGameModes value.
-     */
-    public void setDisabledGameModes(Set<String> disabledGameModes) {
-        this.disabledGameModes = disabledGameModes;
-    }
+	@ConfigComment("")
+	@ConfigComment("Barrier offset.")
+	@ConfigComment("The barrier normally occurs at the protection range limit but this value extends it outwards.")
+	@ConfigComment("This does not extend the protection range, but will enable players to go outside their protected area.")
+	@ConfigComment("The barrier will not go further than the island distance. Minimum and default value is 0.")
+	@ConfigEntry(path = "barrier-offset")
+	private int barrierOffset = 0;
 
-    /**
-     * @return disabledGameModes value.
-     */
-    public Set<String> getDisabledGameModes() {
-        return this.disabledGameModes;
-    }
+	/**
+	 * @param disabledGameModes
+	 *            new disabledGameModes value.
+	 */
+	public void setDisabledGameModes(Set<String> disabledGameModes) {
+		this.disabledGameModes = disabledGameModes;
+	}
 
-    /**
-     * @return the useBarrierBlocks
-     */
-    public boolean isUseBarrierBlocks() {
-        return useBarrierBlocks;
-    }
+	/**
+	 * @return disabledGameModes value.
+	 */
+	public Set<String> getDisabledGameModes() {
+		return this.disabledGameModes;
+	}
 
-    /**
-     * @param useBarrierBlocks the useBarrierBlocks to set
-     */
-    public void setUseBarrierBlocks(boolean useBarrierBlocks) {
-        this.useBarrierBlocks = useBarrierBlocks;
-    }
+	/**
+	 * @return the useBarrierBlocks
+	 */
+	public boolean isUseBarrierBlocks() {
+		return useBarrierBlocks;
+	}
 
-    /**
-     * @return the showByDefault
-     */
-    public boolean isShowByDefault() {
-        return showByDefault;
-    }
+	/**
+	 * @param useBarrierBlocks
+	 *            the useBarrierBlocks to set
+	 */
+	public void setUseBarrierBlocks(boolean useBarrierBlocks) {
+		this.useBarrierBlocks = useBarrierBlocks;
+	}
 
-    /**
-     * @param showByDefault the showByDefault to set
-     */
-    public void setShowByDefault(boolean showByDefault) {
-        this.showByDefault = showByDefault;
-    }
+	/**
+	 * @return the showByDefault
+	 */
+	public boolean isShowByDefault() {
+		return showByDefault;
+	}
 
-    /**
-     * @return the showMaxBorder
-     */
-    public boolean isShowMaxBorder() {
-        return showMaxBorder;
-    }
+	/**
+	 * @param showByDefault
+	 *            the showByDefault to set
+	 */
+	public void setShowByDefault(boolean showByDefault) {
+		this.showByDefault = showByDefault;
+	}
 
-    /**
-     * @param showMaxBorder the showMaxBorder to set
-     */
-    public void setShowMaxBorder(boolean showMaxBorder) {
-        this.showMaxBorder = showMaxBorder;
-    }
+	/**
+	 * @return the showMaxBorder
+	 */
+	public boolean isShowMaxBorder() {
+		return showMaxBorder;
+	}
 
-    /**
-     * @return the returnTeleport
-     */
-    public boolean isReturnTeleport() {
-        return returnTeleport;
-    }
+	/**
+	 * @param showMaxBorder
+	 *            the showMaxBorder to set
+	 */
+	public void setShowMaxBorder(boolean showMaxBorder) {
+		this.showMaxBorder = showMaxBorder;
+	}
 
-    /**
-     * @param returnTeleport the returnTeleport to set
-     */
-    public void setReturnTeleport(boolean returnTeleport) {
-        this.returnTeleport = returnTeleport;
-    }
+	/**
+	 * @return the returnTeleport
+	 */
+	public boolean isReturnTeleport() {
+		return returnTeleport;
+	}
 
-    /**
-     * @return the showParticles
-     */
-    public boolean isShowParticles() {
-        return showParticles;
-    }
+	/**
+	 * @param returnTeleport
+	 *            the returnTeleport to set
+	 */
+	public void setReturnTeleport(boolean returnTeleport) {
+		this.returnTeleport = returnTeleport;
+	}
 
-    /**
-     * @param showParticles the showParticles to set
-     */
-    public void setShowParticles(boolean showParticles) {
-        this.showParticles = showParticles;
-    }
+	/**
+	 * @return the showParticles
+	 */
+	public boolean isShowParticles() {
+		return showParticles;
+	}
 
-    public BorderType getType() {
-        if (type == null) {
-            type = BorderType.VANILLA;
-        }
-        return type;
-    }
+	/**
+	 * @param showParticles
+	 *            the showParticles to set
+	 */
+	public void setShowParticles(boolean showParticles) {
+		this.showParticles = showParticles;
+	}
 
-    public void setType(BorderType type) {
-        this.type = type;
-    }
+	public BorderType getType() {
+		if (type == null) {
+			type = BorderType.VANILLA;
+		}
+		return type;
+	}
 
-    public int getBarrierOffset() {
-        if (barrierOffset < 0) {
-            barrierOffset = 0;
-        }
-        return barrierOffset;
-    }
+	public void setType(BorderType type) {
+		this.type = type;
+	}
 
-    public void setBarrierOffset(int barrierOffset) {
-        this.barrierOffset = barrierOffset;
-        getBarrierOffset();
-    }
+	public int getBarrierOffset() {
+		if (barrierOffset < 0) {
+			barrierOffset = 0;
+		}
+		return barrierOffset;
+	}
 
-    /**
-     * @return the returnTeleportBlock
-     */
-    public boolean isReturnTeleportBlock() {
-        return returnTeleportBlock;
-    }
+	public void setBarrierOffset(int barrierOffset) {
+		this.barrierOffset = barrierOffset;
+		getBarrierOffset();
+	}
 
-    /**
-     * @param returnTeleportBlock the returnTeleportBlock to set
-     */
-    public void setReturnTeleportBlock(boolean returnTeleportBlock) {
-        this.returnTeleportBlock = returnTeleportBlock;
-    }
+	/**
+	 * @return the returnTeleportBlock
+	 */
+	public boolean isReturnTeleportBlock() {
+		return returnTeleportBlock;
+	}
 
-    /**
-     * @return the bounceBack
-     */
-    public boolean isBounceBack() {
-        return bounceBack;
-    }
+	/**
+	 * @param returnTeleportBlock
+	 *            the returnTeleportBlock to set
+	 */
+	public void setReturnTeleportBlock(boolean returnTeleportBlock) {
+		this.returnTeleportBlock = returnTeleportBlock;
+	}
 
-    /**
-     * @param bounceBack the bounceBack to set
-     */
-    public void setBounceBack(boolean bounceBack) {
-        this.bounceBack = bounceBack;
-    }
+	/**
+	 * @return the bounceBack
+	 */
+	public boolean isBounceBack() {
+		return bounceBack;
+	}
 
-    /**
-     * @return the color
-     */
-    public BorderColor getColor() {
-        return color;
-    }
+	/**
+	 * @param bounceBack
+	 *            the bounceBack to set
+	 */
+	public void setBounceBack(boolean bounceBack) {
+		this.bounceBack = bounceBack;
+	}
 
-    /* *
-     * @param color the color to set
-     */
-    public void setColor(BorderColor color) {
-        this.color = color;
-    }
+	/**
+	 * @return the color
+	 */
+	public BorderColor getColor() {
+		return color;
+	}
+
+	/*
+	 * *
+	 * 
+	 * @param color the color to set
+	 */
+	public void setColor(BorderColor color) {
+		this.color = color;
+	}
 }

@@ -9,16 +9,22 @@ import world.bentobox.magiccobblestonegenerator.utils.Utils;
 
 public class EconomyManager {
 	private final StoneGeneratorAddon addon;
-	public EconomyManager(StoneGeneratorAddon addon) { this.addon = addon; }
+	public EconomyManager(StoneGeneratorAddon addon) {
+		this.addon = addon;
+	}
 
 	public boolean canActivate(User u, GeneratorDataObject d, GeneratorTierObject t) {
-		if (!d.getPurchasedTiers().contains(t.getUniqueId())) return false;
-		return !this.addon.isVaultProvided() || t.getActivationCost() <= 0 || this.addon.getPlugin().getVault().map(v -> v.has(u, t.getActivationCost())).orElse(true);
+		if (!d.getPurchasedTiers().contains(t.getUniqueId()))
+			return false;
+		return !this.addon.isVaultProvided() || t.getActivationCost() <= 0
+				|| this.addon.getPlugin().getVault().map(v -> v.has(u, t.getActivationCost())).orElse(true);
 	}
 
 	public boolean canPurchase(User u, GeneratorDataObject d, GeneratorTierObject t) {
-		if (d.getPurchasedTiers().contains(t.getUniqueId())) return false;
-		return !this.addon.isVaultProvided() || t.getGeneratorTierCost() <= 0 || this.addon.getPlugin().getVault().map(v -> v.has(u, t.getGeneratorTierCost())).orElse(true);
+		if (d.getPurchasedTiers().contains(t.getUniqueId()))
+			return false;
+		return !this.addon.isVaultProvided() || t.getGeneratorTierCost() <= 0
+				|| this.addon.getPlugin().getVault().map(v -> v.has(u, t.getGeneratorTierCost())).orElse(true);
 	}
 
 	public void activate(User u, Island i, GeneratorDataObject d, GeneratorTierObject t) {
