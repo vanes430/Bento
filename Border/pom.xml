@@ -131,10 +131,6 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/bentoboxworld/</url>
         </repository>
-        <repository>
-            <id>EssentialsX</id>
-            <url>https://repo.essentialsx.net/releases/</url>
-        </repository>
         <!-- CanvasMC API -->
         <repository>
             <id>canvasmc-snapshots</id>
@@ -172,13 +168,6 @@
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>org.eclipse.jdt.annotation</artifactId>
             <version>2.2.600</version>
-        </dependency>
-        <!-- EssentialsX -->
-        <dependency>
-            <groupId>net.essentialsx</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.21.1</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
