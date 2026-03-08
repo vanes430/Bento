@@ -55,10 +55,7 @@ public class Level extends Addon {
 	private BlockConfig blockConfig;
 	private Pipeliner pipeliner;
 	private LevelsManager manager;
-	private boolean stackersEnabled;
 	private boolean advChestEnabled;
-	private boolean roseStackersEnabled;
-	private boolean ultimateStackerEnabled;
 	private final List<GameModeAddon> registeredGameModes = new ArrayList<>();
 
 	/**
@@ -109,10 +106,7 @@ public class Level extends Addon {
 		registerAllListeners();
 		registerGameModeCommands();
 		registerRequestHandlers();
-		hookPlugin("WildStacker", this::hookWildStackers);
 		hookAdvancedChests();
-		hookPlugin("RoseStacker", this::hookRoseStackers);
-		hookPlugin("UltimateStacker", this::hookUltimateStacker);
 
 		if (this.isEnabled()) {
 			hookExtensions();
@@ -156,13 +150,6 @@ public class Level extends Addon {
 		}
 	}
 
-	private void hookWildStackers() {
-		stackersEnabled = Bukkit.getPluginManager().isPluginEnabled("WildStacker");
-		if (stackersEnabled) {
-			log("Hooked into WildStackers.");
-		}
-	}
-
 	private void hookAdvancedChests() {
 		if (!settings.getDisabledPluginHooks().contains("AdvancedChests")) {
 			Plugin advChest = Bukkit.getPluginManager().getPlugin("AdvancedChests");
@@ -176,20 +163,6 @@ public class Level extends Addon {
 					advChestEnabled = false;
 				}
 			}
-		}
-	}
-
-	private void hookRoseStackers() {
-		roseStackersEnabled = Bukkit.getPluginManager().isPluginEnabled("RoseStacker");
-		if (roseStackersEnabled) {
-			log("Hooked into RoseStackers.");
-		}
-	}
-
-	private void hookUltimateStacker() {
-		ultimateStackerEnabled = Bukkit.getPluginManager().isPluginEnabled("UltimateStacker");
-		if (ultimateStackerEnabled) {
-			log("Hooked into UltimateStacker.");
 		}
 	}
 
@@ -319,13 +292,6 @@ public class Level extends Addon {
 	void setSettings(ConfigSettings configSettings) {
 		this.settings = configSettings;
 
-	}
-
-	/**
-	 * @return the stackersEnabled
-	 */
-	public boolean isStackersEnabled() {
-		return stackersEnabled;
 	}
 
 	/**
@@ -469,20 +435,6 @@ public class Level extends Addon {
 	 */
 	public boolean isRegisteredGameModeWorld(World world) {
 		return registeredGameModes.stream().map(GameModeAddon::getOverWorld).anyMatch(w -> Util.sameWorld(world, w));
-	}
-
-	/**
-	 * @return the roseStackersEnabled
-	 */
-	public boolean isRoseStackersEnabled() {
-		return roseStackersEnabled;
-	}
-
-	/**
-	 * @return the ultimateStackerEnabled
-	 */
-	public boolean isUltimateStackerEnabled() {
-		return ultimateStackerEnabled;
 	}
 
 	/**

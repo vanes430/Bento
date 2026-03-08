@@ -144,7 +144,6 @@ public class ConfigSettings implements ConfigObject {
 
 	@ConfigComment("")
 	@ConfigComment("Disables hooking with other plugins.")
-	@ConfigComment("Example: disabled-plugin-hooks: [UltimateStacker, RoseStacker]")
 	@ConfigEntry(path = "disabled-plugin-hooks")
 	private List<String> disabledPluginHooks = new ArrayList<>();
 

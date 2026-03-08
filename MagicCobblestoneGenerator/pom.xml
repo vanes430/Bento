@@ -37,7 +37,6 @@
         <folia.version>1.21.11-R0.1-SNAPSHOT</folia.version>
         <!-- BentoBox local version -->
         <bentobox.version>3.11.2-SNAPSHOT-LOCAL</bentobox.version>
-        <level.version>2.5.0</level.version>
         <!-- Mocks -->
         <powermock.version>2.0.9</powermock.version>
         <!-- Panel Utils version -->
@@ -159,12 +158,6 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
             <version>4.26.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>world.bentobox</groupId>
-            <artifactId>level</artifactId>
-            <version>${level.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

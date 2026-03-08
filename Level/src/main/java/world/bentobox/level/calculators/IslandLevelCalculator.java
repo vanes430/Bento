@@ -38,8 +38,6 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 
 import io.th0rgal.oraxen.mechanics.provided.gameplay.furniture.FurnitureMechanic;
 
-import com.bgsoftware.wildstacker.api.WildStackerAPI;
-import com.bgsoftware.wildstacker.api.objects.StackedBarrel;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.Multisets;
@@ -48,7 +46,6 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 
-import dev.rosewood.rosestacker.api.RoseStackerAPI;
 import us.lynuxcraft.deadsilenceiv.advancedchests.AdvancedChestsAPI;
 import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 import us.lynuxcraft.deadsilenceiv.advancedchests.chest.gui.page.ChestPage;
@@ -78,7 +75,6 @@ public class IslandLevelCalculator {
 	private final boolean zeroIsland;
 	private final Map<Environment, World> worlds = new EnumMap<>(Environment.class);
 	private final int seaHeight;
-	private final List<Location> stackedBlocks = new ArrayList<>();
 	private final Set<Chunk> chestBlocks = new HashSet<>();
 	private final Set<Chunk> furnitureChunks = new HashSet<>();
 	private final Map<Location, Boolean> spawners = new HashMap<>();
@@ -342,7 +338,6 @@ public class IslandLevelCalculator {
 			CompletableFuture<List<Chunk>> r2 = new CompletableFuture<>();
 			List<Chunk> chunkList = new ArrayList<>();
 			World world = worlds.get(env);
-			// Get the chunk, and then coincidentally check the RoseStacker
 			loadChunks(r2, world, pairList, chunkList);
 			return r2;
 		}
@@ -360,23 +355,9 @@ public class IslandLevelCalculator {
 		Util.getChunkAtAsync(world, p.x, p.z, true).thenAccept(chunk -> {
 			if (chunk != null) {
 				chunkList.add(chunk);
-				roseStackerCheck(chunk);
 			}
 			loadChunks(r2, world, pairList, chunkList); // Iteration
 		});
-	}
-
-	private void roseStackerCheck(Chunk chunk) {
-		if (addon.isRoseStackersEnabled()) {
-			RoseStackerAPI.getInstance().getStackedBlocks(Collections.singletonList(chunk)).forEach(e -> {
-				// Blocks below sea level can be scored differently
-				boolean belowSeaLevel = seaHeight > 0 && e.getLocation().getY() <= seaHeight;
-				// Check block once because the base block will be counted in the chunk snapshot
-				for (int _x = 0; _x < e.getStackSize() - 1; _x++) {
-					checkBlock(e.getBlock().getType(), belowSeaLevel);
-				}
-			});
-		}
 	}
 
 	/**
@@ -640,20 +621,6 @@ public class IslandLevelCalculator {
 			}
 		}
 
-		// === Stacked Block Hooks (WildStacker, RoseStacker, etc.) ===
-		// These plugins stack blocks like spawners or cauldrons. We identify potential
-		// stacked blocks and add their locations for later, more detailed checks.
-		if (addon.isStackersEnabled() && (m == Material.CAULDRON || m == Material.SPAWNER)) {
-			if (loc == null)
-				loc = new Location(cp.world, globalX, y, globalZ);
-			stackedBlocks.add(loc);
-		}
-		if (addon.isUltimateStackerEnabled()) {
-			if (loc == null)
-				loc = new Location(cp.world, globalX, y, globalZ);
-			UltimateStackerCalc.addStackers(m, loc, results, belowSeaLevel, limitCountAndValue(m));
-		}
-
 		// === Slab Handling ===
 		// Double slabs are counted as a single, full block. Single slabs are counted
 		// as regular blocks. This logic prevents double-counting.
@@ -812,8 +779,8 @@ public class IslandLevelCalculator {
 				pipeliner.getInProcessQueue().remove(this);
 				BentoBox.getInstance().log("Completed Level scan.");
 				// Chunk finished
-				// This was the last chunk. Handle stacked blocks, spawners, chests and exit
-				handleStackedBlocks().thenCompose(v -> handleSpawners()).thenCompose(v -> handleChests())
+				// This was the last chunk. Handle spawners, chests and exit
+				handleSpawners().thenCompose(v -> handleChests())
 						.thenCompose(v -> handleOraxenFurniture()).thenCompose(v -> handleNexoFurniture())
 						.thenRun(() -> {
 							this.tidyUp();
@@ -941,33 +908,6 @@ public class IslandLevelCalculator {
 			futures.add(future);
 		}
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-	}
-
-	private CompletableFuture<Void> handleStackedBlocks() {
-		// Deal with any stacked blocks
-		List<CompletableFuture<Void>> futures = new ArrayList<>();
-		for (Location v : stackedBlocks) {
-			CompletableFuture<Void> future = Util.getChunkAtAsync(v).thenAccept(c -> {
-				Block stackedBlock = v.getBlock();
-				boolean belowSeaLevel = seaHeight > 0 && v.getBlockY() <= seaHeight;
-				if (WildStackerAPI.getWildStacker().getSystemManager().isStackedBarrel(stackedBlock)) {
-					StackedBarrel barrel = WildStackerAPI.getStackedBarrel(stackedBlock);
-					int barrelAmt = WildStackerAPI.getBarrelAmount(stackedBlock);
-					for (int _x = 0; _x < barrelAmt; _x++) {
-						checkBlock(barrel.getType(), belowSeaLevel);
-					}
-				} else if (WildStackerAPI.getWildStacker().getSystemManager().isStackedSpawner(stackedBlock)) {
-					int spawnerAmt = WildStackerAPI.getSpawnersAmount((CreatureSpawner) stackedBlock.getState());
-					for (int _x = 0; _x < spawnerAmt; _x++) {
-						checkBlock(stackedBlock.getType(), belowSeaLevel);
-					}
-				}
-			});
-			futures.add(future);
-		}
-		// Return a CompletableFuture that completes when all futures are done
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-
 	}
 
 	@Override

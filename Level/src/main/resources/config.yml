@@ -89,5 +89,4 @@ units:
 include-shulkers-in-chest: false
 # 
 # Disables hooking with other plugins.
-# Example: disabled-plugin-hooks: [UltimateStacker, RoseStacker]
 disabled-plugin-hooks: []
