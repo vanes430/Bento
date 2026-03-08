@@ -1,6 +1,6 @@
 name: BentoBox-Level
 main: world.bentobox.level.LevelPladdon
-version: ${project.version}${build.number}
+version: ${project.version}
 api-version: "1.21"
 folia-supported: true
 

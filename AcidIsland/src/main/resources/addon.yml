@@ -1,6 +1,6 @@
 name: AcidIsland
 main: world.bentobox.acidisland.AcidIsland
-version: ${version}${build.number}
+version: ${version}
 api-version: 1.0.0
 metrics: true
 repository: "BentoBoxWorld/AcidIsland"

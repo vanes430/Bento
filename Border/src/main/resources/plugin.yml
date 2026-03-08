@@ -1,6 +1,6 @@
 name: BentoBox-Border
 main: world.bentobox.border.BorderPladdon
-version: ${project.version}${build.number}
+version: ${project.version}
 api-version: "1.21"
 
 authors: [tastybento]

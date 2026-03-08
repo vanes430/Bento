@@ -1,6 +1,6 @@
 name: Level
 main: world.bentobox.level.Level
-version: ${version}${build.number}
+version: ${version}
 icon: DIAMOND
 api-version: 1.0.0
 
