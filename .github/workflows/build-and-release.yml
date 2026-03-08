@@ -1,0 +1,101 @@
+name: Build and Release BentoBox & Addons
+
+on:
+  push:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build-bentobox:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build BentoBox
+        working-directory: BentoBox
+        run: ./gradlew build --no-daemon
+
+      - name: Upload BentoBox Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BentoBox-Jar
+          path: BentoBox/build/libs/BentoBox-*-SNAPSHOT-LOCAL.jar
+          if-no-files-found: error
+
+  build-addons:
+    needs: build-bentobox
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: [AcidIsland, Border, Level, MagicCobblestoneGenerator]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Download BentoBox Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BentoBox-Jar
+          path: BentoBox/build/libs/
+
+      - name: Build Addon ${{ matrix.addon }}
+        working-directory: ${{ matrix.addon }}
+        run: mvn clean package -B -DskipTests
+
+      - name: Upload Addon Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.addon }}-Jar
+          path: ${{ matrix.addon }}/target/${{ matrix.addon }}-*.jar
+          if-no-files-found: error
+
+  release:
+    needs: [build-bentobox, build-addons]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-jars/
+          merge-multiple: true
+
+      - name: Prepare Release Files
+        run: |
+          mkdir release-files
+          # Filter only main JARs (exclude sources/javadoc if they exist)
+          find all-jars/ -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" ! -name "original-*.jar" -exec cp {} release-files/ \;
+          ls -R release-files/
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          body: |
+            Automated build of BentoBox and Addons.
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+          files: release-files/*.jar
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
