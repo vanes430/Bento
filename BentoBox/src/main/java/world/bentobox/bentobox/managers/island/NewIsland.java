@@ -16,7 +16,6 @@ import org.bukkit.World.Environment;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.util.Vector;
 
-import world.bentobox.bentobox.BStats;
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.events.IslandBaseEvent;
@@ -387,8 +386,6 @@ public class NewIsland {
 		}
 		// Set default island flags/settings
 		island.setFlagsDefaults();
-		// Register metrics for island creation
-		plugin.getMetrics().ifPresent(BStats::increaseIslandsCreatedCount);
 		// Add history record for island creation
 		island.log(new LogEntry.Builder(LogType.JOINED).data(user.getUniqueId().toString(), "owner").build());
 		// Save island to database

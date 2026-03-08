@@ -20,7 +20,6 @@ import world.bentobox.bentobox.api.panels.Tab;
 import world.bentobox.bentobox.api.panels.TabbedPanel;
 import world.bentobox.bentobox.api.panels.builders.PanelItemBuilder;
 import world.bentobox.bentobox.api.user.User;
-import world.bentobox.bentobox.hooks.LangUtilsHook;
 import world.bentobox.bentobox.util.Util;
 
 /**
@@ -121,7 +120,7 @@ public class GeoMobLimitTab implements Tab, ClickHandler {
 
 	private PanelItem getPanelItem(EntityType c, User user) {
 		PanelItemBuilder pib = new PanelItemBuilder();
-		pib.name(LangUtilsHook.getEntityName(c, user));
+		pib.name(Util.prettifyText(c.name()));
 		pib.clickHandler(this);
 		if (type == EntityLimitTabType.MOB_LIMIT) {
 			if (!BentoBox.getInstance().getIWM().getMobLimitSettings(world).contains(c.name())) {

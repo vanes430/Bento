@@ -25,14 +25,7 @@ import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.commands.BentoBoxCommand;
 import world.bentobox.bentobox.database.DatabaseSetup;
 import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
 import world.bentobox.bentobox.hooks.MultipaperHook;
-import world.bentobox.bentobox.hooks.MultiverseCore4Hook;
-import world.bentobox.bentobox.hooks.MultiverseCore5Hook;
-import world.bentobox.bentobox.hooks.MyWorldsHook;
-import world.bentobox.bentobox.hooks.MythicMobsHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
-import world.bentobox.bentobox.hooks.SlimefunHook;
 import world.bentobox.bentobox.hooks.VaultHook;
 import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.hooks.placeholders.PlaceholderAPIHook;
@@ -102,9 +95,6 @@ public class BentoBox extends JavaPlugin implements Listener {
 	private HeadGetter headGetter;
 
 	private boolean isLoaded;
-
-	// Metrics
-	@Nullable private BStats metrics;
 
 	private Config<Settings> configObject;
 
@@ -198,9 +188,6 @@ public class BentoBox extends JavaPlugin implements Listener {
 		// ZNPCsPlus
 		hooksManager.registerHook(new ZNPCsPlusHook());
 
-		// MythicMobs
-		hooksManager.registerHook(new MythicMobsHook());
-
 		hooksManager.registerHook(new PlaceholderAPIHook());
 		// Setup the Placeholders manager
 		placeholdersManager = new PlaceholdersManager(this);
@@ -225,34 +212,6 @@ public class BentoBox extends JavaPlugin implements Listener {
 
 		// Make sure all flag listeners are registered.
 		flagsManager.registerListeners();
-
-		// Load metrics
-		metrics = new BStats(this);
-		metrics.registerMetrics();
-
-		// Register Multiverse hook - MV loads AFTER BentoBox
-		// Make sure all worlds are already registered to Multiverse.
-		if (hasClass("org.mvplugins.multiverse.core.MultiverseCore")) {
-			hooksManager.registerHook(new MultiverseCore5Hook());
-		} else if (hasClass("com.onarandombox.MultiverseCore.MultiverseCore")) {
-			hooksManager.registerHook(new MultiverseCore4Hook());
-		}
-		hooksManager.registerHook(new MyWorldsHook());
-		islandWorldManager.registerWorldsToMultiverse(true);
-
-		// Register Slimefun
-		hooksManager.registerHook(new SlimefunHook());
-
-		// Register ItemsAdder
-		hooksManager.registerHook(new ItemsAdderHook(this));
-
-		// Register Oraxen
-		hooksManager.registerHook(new OraxenHook(this));
-
-		// TODO: re-enable after implementation
-		// hooksManager.registerHook(new DynmapHook());
-		// TODO: re-enable after rework
-		// hooksManager.registerHook(new LangUtilsHook());
 
 		webManager = new WebManager(this);
 
@@ -614,14 +573,6 @@ public class BentoBox extends JavaPlugin implements Listener {
 	 */
 	public IslandDeletionManager getIslandDeletionManager() {
 		return islandDeletionManager;
-	}
-
-	/**
-	 * @return an optional of the Bstats instance
-	 * @since 1.1
-	 */
-	@NonNull public Optional<BStats> getMetrics() {
-		return Optional.ofNullable(metrics);
 	}
 
 	/**

@@ -44,9 +44,6 @@ import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.hooks.Hook;
 import world.bentobox.bentobox.database.objects.IslandDeletion;
 import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
-import world.bentobox.bentobox.hooks.SlimefunHook;
 import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.util.MyBiomeGrid;
 import world.bentobox.bentobox.util.Util;
@@ -191,8 +188,6 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 		double baseZ = toChunk.getZ() << 4;
 		int minHeight = toChunk.getWorld().getMinHeight();
 		int maxHeight = toChunk.getWorld().getMaxHeight();
-		Optional<SlimefunHook> slimefunHook = plugin.getHooks().getHook("Slimefun").map(SlimefunHook.class::cast);
-		Optional<Hook> oraxenHook = plugin.getHooks().getHook("Oraxen");
 
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
@@ -207,15 +202,9 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 						} catch (Exception ignored) {
 						}
 					}
-					Location loc = new Location(toChunk.getWorld(), baseX + x, y, baseZ + z);
-					slimefunHook.ifPresent(hook -> hook.clearBlockInfo(loc, true));
-					oraxenHook.ifPresent(h -> OraxenHook.clearBlockInfo(loc));
 				}
 			}
 		}
-		Optional<ItemsAdderHook> itemsAdderHook = plugin.getHooks().getHook("ItemsAdder")
-				.map(ItemsAdderHook.class::cast);
-		itemsAdderHook.ifPresent(hook -> ItemsAdderHook.deleteAllCustomBlocksInChunk(toChunk));
 	}
 
 	private CompletableFuture<Chunk> getSeedWorldChunk(World world, int chunkX, int chunkZ) {
@@ -275,17 +264,11 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 	 *            - limit box that the chunk needs to be in
 	 */
 	private void copyChunkDataToChunk(Chunk toChunk, Chunk fromChunk, BoundingBox limitBox) {
-		double baseX = toChunk.getX() << 4;
-		double baseZ = toChunk.getZ() << 4;
 		int minHeight = toChunk.getWorld().getMinHeight();
 		int maxHeight = toChunk.getWorld().getMaxHeight();
-		Optional<SlimefunHook> slimefunHook = plugin.getHooks().getHook("Slimefun").map(SlimefunHook.class::cast);
-		Optional<ItemsAdderHook> itemsAdderHook = plugin.getHooks().getHook("ItemsAdder")
-				.map(ItemsAdderHook.class::cast);
-		Optional<Hook> oraxenHook = plugin.getHooks().getHook("Oraxen");
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
-				if (limitBox != null && !limitBox.contains(baseX + x, 0, baseZ + z)) {
+				if (limitBox != null && !limitBox.contains((toChunk.getX() << 4) + x, 0, (toChunk.getZ() << 4) + z)) {
 					continue;
 				}
 				for (int y = minHeight; y < maxHeight; y++) {
@@ -294,16 +277,9 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 					if (x % 4 == 0 && y % 4 == 0 && z % 4 == 0) {
 						toChunk.getBlock(x, y, z).setBiome(fromChunk.getBlock(x, y, z).getBiome());
 					}
-					// Delete any 3rd party blocks
-					Location loc = new Location(toChunk.getWorld(), baseX + x, y, baseZ + z);
-					slimefunHook.ifPresent(hook -> hook.clearBlockInfo(loc, true));
-					// Oraxen
-					oraxenHook.ifPresent(h -> OraxenHook.clearBlockInfo(loc));
 				}
 			}
 		}
-		// Items Adder
-		itemsAdderHook.ifPresent(hook -> ItemsAdderHook.deleteAllCustomBlocksInChunk(toChunk));
 
 		// Entities
 		Arrays.stream(fromChunk.getEntities())
@@ -495,8 +471,6 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 		double baseZ = chunk.getZ() << 4;
 		int minHeight = chunk.getWorld().getMinHeight();
 		int maxHeight = chunk.getWorld().getMaxHeight();
-		Optional<Hook> slimefunHook = plugin.getHooks().getHook("Slimefun");
-		Optional<Hook> oraxenHook = plugin.getHooks().getHook("Oraxen");
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				if (!limitBox.contains(baseX + x, 0, baseZ + z)) {
@@ -508,15 +482,8 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 					if (x % 4 == 0 && y % 4 == 0 && z % 4 == 0) {
 						chunk.getBlock(x, y, z).setBiome(biomeGrid.getBiome(x, y, z));
 					}
-					// Delete any 3rd party blocks
-					Location loc = new Location(chunk.getWorld(), baseX + x, y, baseZ + z);
-					slimefunHook.ifPresent(sf -> ((SlimefunHook) sf).clearBlockInfo(loc, true));
-					// Oraxen
-					oraxenHook.ifPresent(h -> OraxenHook.clearBlockInfo(loc));
 				}
 			}
 		}
-		// Items Adder
-		plugin.getHooks().getHook("ItemsAdder").ifPresent(hook -> ItemsAdderHook.deleteAllCustomBlocksInChunk(chunk));
 	}
 }

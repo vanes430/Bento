@@ -101,27 +101,17 @@ val mysqlVersion = "8.0.27"
 val postgresqlVersion = "42.2.18"
 val hikaricpVersion = "5.0.1"
 val paperVersion = "1.21.11-R0.1-SNAPSHOT"
-val bstatsVersion = "3.0.0"
 val vaultVersion = "1.7.1"
 val levelVersion = "2.21.3"
 val placeholderapiVersion = "2.11.7"
-val myworldsVersion = "1.19.3-v1"
 val awaitilityVersion = "4.2.2"
-val mythicDistVersion = "5.9.5"
-val multiverseCore5Version = "5.0.0-SNAPSHOT"
-val multiverseCore4Version = "4.3.16"
-val langUtilsVersion = "3.2.2"
-val slimefun4Version = "RC-37"
-val itemsAdderVersion = "4.0.2-beta-release-11"
 val fancyNpcsVersion = "2.4.4"
 val znpcsplusApiVersion = "2.0.0-SNAPSHOT"
 val fancyHologramsVersion = "2.4.1"
 val commonsLangVersion = "2.6"
 val jaxbApiVersion = "2.3.0"
-val gsonRecordTypeAdapterFactoryVersion = "0.3.0"
 val jdtAnnotationVersion = "2.2.600"
 val multilibVersion = "1.2.5"
-val oraxenVersion = "1.193.1"
 
 // Store versions in extra properties for resource filtering (used in plugin.yml, config.yml)
 extra["java.version"] = javaVersion
@@ -134,11 +124,9 @@ extra["mysql.version"] = mysqlVersion
 extra["postgresql.version"] = postgresqlVersion
 extra["hikaricp.version"] = hikaricpVersion
 extra["paper.version"] = paperVersion
-extra["bstats.version"] = bstatsVersion
 extra["vault.version"] = vaultVersion
 extra["level.version"] = levelVersion
 extra["placeholderapi.version"] = placeholderapiVersion
-extra["myworlds.version"] = myworldsVersion
 extra["build.version"] = buildVersion
 extra["build.number"] = finalBuildNumber
 extra["revision"] = finalRevision
@@ -243,40 +231,14 @@ dependencies {
     compileOnly("com.zaxxer:HikariCP:$hikaricpVersion")
     compileOnly("com.github.MilkBowl:VaultAPI:$vaultVersion")
     compileOnly("me.clip:placeholderapi:$placeholderapiVersion")
-    compileOnly("com.bergerkiller.bukkit:MyWorlds:$myworldsVersion") {
-        exclude(group = "org.spigotmc", module = "spigot-api")
-    }
-    compileOnly("io.lumine:Mythic-Dist:$mythicDistVersion")
-    compileOnly("org.mvplugins.multiverse.core:multiverse-core:$multiverseCore5Version")
-    compileOnly("com.onarandombox.multiversecore:multiverse-core:$multiverseCore4Version") {
-        exclude(group = "org.spigotmc", module = "spigot-api")
-    }
-    compileOnly("com.github.apachezy:LangUtils:$langUtilsVersion")
-    compileOnly("com.github.Slimefun:Slimefun4:$slimefun4Version")
-    compileOnly("dev.lone:api-itemsadder:$itemsAdderVersion")
     compileOnly("de.oliver:FancyNpcs:$fancyNpcsVersion")
     compileOnly("lol.pyr:znpcsplus-api:$znpcsplusApiVersion")
     compileOnly("de.oliver:FancyHolograms:$fancyHologramsVersion")
     compileOnly("world.bentobox:level:$levelVersion-SNAPSHOT")
     compileOnly("commons-lang:commons-lang:$commonsLangVersion")
-    compileOnly("io.th0rgal:oraxen:$oraxenVersion") {
-        exclude(group = "me.gabytm.util", module = "actions-spigot")
-        exclude(group = "org.jetbrains", module = "annotations")
-        exclude(group = "com.ticxo", module = "PlayerAnimator")
-        exclude(group = "com.github.stefvanschie.inventoryframework", module = "IF")
-        exclude(group = "io.th0rgal", module = "protectionlib")
-        exclude(group = "dev.triumphteam", module = "triumph-gui")
-        exclude(group = "org.bstats", module = "bstats-bukkit")
-        exclude(group = "com.jeff-media", module = "custom-block-data")
-        exclude(group = "com.jeff-media", module = "persistent-data-serializer")
-        exclude(group = "com.jeff-media", module = "MorePersistentDataTypes")
-        exclude(group = "gs.mclo", module = "java")
-    }
 
     // --- Implementation Dependencies: Shaded into final JAR ---
-    implementation("org.bstats:bstats-bukkit:$bstatsVersion")
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("com.github.Marcono1234:gson-record-type-adapter-factory:$gsonRecordTypeAdapterFactoryVersion")
     implementation("org.eclipse.jdt:org.eclipse.jdt.annotation:$jdtAnnotationVersion")
     implementation("com.github.puregero:multilib:$multilibVersion")
 
@@ -383,7 +345,6 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
 
     // Relocate (rename) packages to avoid conflicts with other plugins
     // This prevents "duplicate class" errors when multiple plugins have same dependency
-    relocate("org.bstats", "world.bentobox.bentobox.util.metrics")
     relocate("io.papermc.lib", "world.bentobox.bentobox.paperlib")
     relocate("com.github.puregero.multilib", "world.bentobox.bentobox.multilib")
     

@@ -41,8 +41,6 @@ import world.bentobox.bentobox.blueprints.dataobjects.BlueprintCreatureSpawner;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintEntity;
 import world.bentobox.bentobox.database.objects.Island;
 import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.MythicMobsHook;
 import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.nms.PasteHandler;
 
@@ -179,12 +177,7 @@ public class DefaultPasteUtil {
 			bpBlock.getBannerPatterns().removeIf(Objects::isNull);
 			banner.setPatterns(bpBlock.getBannerPatterns());
 			banner.update(true, false);
-		} else // Check ItemsAdder
-		if (bpBlock.getItemsAdderBlock() != null && !bpBlock.getItemsAdderBlock().isEmpty()) {
-			BentoBox.getInstance().getHooks().getHook("ItemsAdder")
-					.ifPresent(h -> ItemsAdderHook.place(bpBlock.getItemsAdderBlock(), block.getLocation()));
 		}
-
 	}
 
 	/**
@@ -266,13 +259,6 @@ public class DefaultPasteUtil {
 			return false;
 		}
 
-		// Mythic Mobs entity
-		if (k.getMythicMobsRecord() != null && plugin.getHooks().getHook("MythicMobs")
-				.filter(mmh -> mmh instanceof MythicMobsHook)
-				.map(mmh -> ((MythicMobsHook) mmh).spawnMythicMob(k.getMythicMobsRecord(), location)).orElse(false)) {
-			// MythicMob has spawned.
-			return false;
-		}
 		if (k.getType() == null) {
 			// Nothing
 			return false;

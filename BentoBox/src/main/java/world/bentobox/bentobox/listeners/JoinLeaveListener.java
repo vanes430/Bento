@@ -107,9 +107,6 @@ public class JoinLeaveListener implements Listener {
 		// owner of an island
 		updateIslandMaxTeamAndHomeSize(user);
 
-		// Add a player to the bStats cache.
-		plugin.getMetrics().ifPresent(bStats -> bStats.addPlayer(playerUUID));
-
 		// Create onIsland placeholders
 		plugin.getAddonsManager().getGameModeAddons().forEach(addon -> plugin.getPlaceholdersManager()
 				.registerPlaceholder(addon, "onisland_" + user.getName(), asker -> {

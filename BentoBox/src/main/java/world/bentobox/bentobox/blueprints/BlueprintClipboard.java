@@ -41,8 +41,6 @@ import world.bentobox.bentobox.blueprints.dataobjects.BlueprintCreatureSpawner;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintEntity;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintTrialSpawner;
 import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.MythicMobsHook;
 import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 
 /**
@@ -72,7 +70,6 @@ public class BlueprintClipboard {
 	private final Map<Vector, BlueprintBlock> bpAttachable = new LinkedHashMap<>();
 	private final Map<Vector, BlueprintBlock> bpBlocks = new LinkedHashMap<>();
 	private final BentoBox plugin = BentoBox.getInstance();
-	private final Optional<MythicMobsHook> mmh;
 	private final Optional<FancyNpcsHook> npc;
 	private final Optional<ZNPCsPlusHook> znpc;
 
@@ -91,9 +88,6 @@ public class BlueprintClipboard {
 		// Fancy NPCs Hook
 		npc = plugin.getHooks().getHook("FancyNpcs").filter(FancyNpcsHook.class::isInstance)
 				.map(FancyNpcsHook.class::cast);
-		// MythicMobs Hook
-		mmh = plugin.getHooks().getHook("MythicMobs").filter(MythicMobsHook.class::isInstance)
-				.map(MythicMobsHook.class::cast);
 		// ZNPCs Plus Hook
 		znpc = plugin.getHooks().getHook("ZNPCsPlus").filter(ZNPCsPlusHook.class::isInstance)
 				.map(ZNPCsPlusHook.class::cast);
@@ -275,13 +269,6 @@ public class BlueprintClipboard {
 		if (blockState.getBlockData() instanceof Attachable) {
 			// Placeholder for attachment
 			bpBlocks.put(pos, new BlueprintBlock("minecraft:air"));
-			// Check for ItemsAdder block
-			plugin.getHooks().getHook("ItemsAdder").ifPresent(hook -> {
-				String iab = ItemsAdderHook.getInCustomRegion(block.getLocation());
-				if (iab != null) {
-					b.setItemsAdderBlock(iab);
-				}
-			});
 			bpAttachable.put(pos, b);
 			return null;
 		}
@@ -321,14 +308,6 @@ public class BlueprintClipboard {
 			b.setBannerPatterns(banner.getPatterns());
 		}
 
-		// ItemsAdder
-		plugin.getHooks().getHook("ItemsAdder").ifPresent(hook -> {
-			String iab = ItemsAdderHook.getInCustomRegion(block.getLocation());
-			if (iab != null) {
-				b.setItemsAdderBlock(iab);
-			}
-		});
-
 		return b;
 	}
 
@@ -356,9 +335,6 @@ public class BlueprintClipboard {
 		List<BlueprintEntity> bpEnts = new ArrayList<>();
 		for (Entity entity : ents) {
 			BlueprintEntity bpe = new BlueprintEntity(entity);
-			// Mythic mob check
-			mmh.filter(mm -> mm.isMythicMob(entity)).map(mm -> mm.getMythicMob(entity))
-					.ifPresent(bpe::setMythicMobsRecord);
 			bpEnts.add(bpe);
 		}
 		return bpEnts;
