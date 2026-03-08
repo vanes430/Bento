@@ -33,16 +33,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>21</java.version>
-        <folia.version>1.21.11-R0.1-SNAPSHOT</folia.version>
-        <!-- BentoBox local version -->
-        <bentobox.version>3.11.2-SNAPSHOT-LOCAL</bentobox.version>
-        <!-- Panel Utils version -->
-        <panelutils.version>1.2.0</panelutils.version>
+        <!-- Nilai Utama -->
+        <minecraft.version>1.21.11</minecraft.version>
+        <!-- Yang lain ngikut otomatis -->
+        <folia.version>${minecraft.version}-R0.1-SNAPSHOT</folia.version>
+        <bentobox.version>${minecraft.version}-SNAPSHOT</bentobox.version>
+        <build.version>${minecraft.version}</build.version>
         <!-- Revision variable removes warning about dynamic version -->
         <revision>${build.version}-SNAPSHOT</revision>
-        <!-- This allows to change between versions and snapshots. -->
-        <build.version>2.7.2</build.version>
-        <build.number>-LOCAL</build.number>
         <!-- Sonar Cloud -->
         <sonar.projectKey>BentoBoxWorld_MagicCobblestoneGenerator</sonar.projectKey>
         <sonar.organization>bentobox-world</sonar.organization>
@@ -128,17 +126,12 @@
             <artifactId>bentobox</artifactId>
             <version>${bentobox.version}</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../BentoBox/build/libs/BentoBox-3.11.2-SNAPSHOT-LOCAL.jar</systemPath>
+            <systemPath>${project.basedir}/../BentoBox/build/libs/BentoBox-${minecraft.version}-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>22.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>lv.id.bonne</groupId>
-            <artifactId>panelutils</artifactId>
-            <version>${panelutils.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
@@ -157,7 +150,7 @@
         <!-- If the BUILD_NUMBER variable is set, then it will be -b[number]. -->
         <!-- If GIT_BRANCH variable is set to origin/master, then it will 
             be the empty string. -->
-        <finalName>${project.name}-${revision}${build.number}</finalName>
+        <finalName>${project.name}-${revision}</finalName>
 
         <defaultGoal>clean package</defaultGoal>
         <resources>
@@ -202,32 +195,7 @@
 			   <artifactId>maven-shade-plugin</artifactId>
 			   <version>3.6.0</version>
 			   <configuration>
-				   <artifactSet>
-					   <includes>
-						   <include>lv.id.bonne:panelutils:*</include>
-					   </includes>
-				   </artifactSet>
-				   <filters>
-					   <filter>
-						   <artifact>*:*</artifact>
-						   <excludes>
-							   <exclude>META-INF/*.SF</exclude>
-							   <exclude>META-INF/*.DSA</exclude>
-							   <exclude>META-INF/*.RSA</exclude>
-						   </excludes>
-					   </filter>
-				   </filters>
-				   <transformers>
-					   <!-- Add a transformer to exclude any other manifest files (possibly from dependencies). -->
-					   <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-						   <resource>META-INF/MANIFEST.MF</resource>
-					   </transformer>
-					   <!-- Add a transformer to include your custom manifest file. -->
-					   <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-						   <resource>META-INF/MANIFEST.MF</resource>
-						   <file>src/main/resources/META-INF/MANIFEST.MF</file>
-					   </transformer>
-				   </transformers>
+				   <minimizeJar>true</minimizeJar>
 			   </configuration>
 			   <executions>
 				   <execution>

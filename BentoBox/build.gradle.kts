@@ -56,32 +56,31 @@ paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArt
 // ============================================================================
 // PROJECT COORDINATES & VERSIONING
 // ============================================================================
+// ini value utama yang di pake barengan
+val minecraftVersion = "1.21.11"
+
 // These properties define the artifact's identity in the Maven repository
 group = "world.bentobox" // From <groupId>
 
 // Base properties from <properties>
-val buildVersion = "3.11.2"
-val buildNumberDefault = "-LOCAL" // Local build identifier
+val buildVersion = minecraftVersion
 val snapshotSuffix = "-SNAPSHOT"  // Indicates development/snapshot version
 
 // CI/CD Logic (Translates Maven <profiles>)
-// Default version format: 3.10.2-LOCAL-SNAPSHOT
-var finalBuildNumber = buildNumberDefault
-var finalRevision = "$buildVersion$snapshotSuffix$finalBuildNumber"
+// Default version format: 1.21.11-SNAPSHOT
+var finalRevision = "$buildVersion$snapshotSuffix"
 
 // 'ci' profile logic: Activated by env.BUILD_NUMBER from CI/CD pipeline
 // Overrides build number with actual CI build number
 val envBuildNumber = System.getenv("BUILD_NUMBER")
 if (!envBuildNumber.isNullOrBlank()) {
-    finalBuildNumber = "-b$envBuildNumber"
-    finalRevision = "$buildVersion$finalBuildNumber$snapshotSuffix"
+    finalRevision = "$buildVersion-b$envBuildNumber$snapshotSuffix"
 }
 
 // 'master' profile logic: Activated when building from origin/master branch
-// Removes -LOCAL and -SNAPSHOT suffixes for release builds
+// Removes -SNAPSHOT suffix for release builds
 val envGitBranch = System.getenv("GIT_BRANCH")
 if (envGitBranch == "origin/master") {
-    finalBuildNumber = "" // No build number for releases
     finalRevision = buildVersion // Clean version number
 }
 
@@ -97,7 +96,7 @@ val mariadbVersion = "3.0.5"
 val mysqlVersion = "8.0.27"
 val postgresqlVersion = "42.2.18"
 val hikaricpVersion = "5.0.1"
-val paperVersion = "1.21.11-R0.1-SNAPSHOT"
+val paperVersion = "$minecraftVersion-R0.1-SNAPSHOT"
 val vaultVersion = "1.7.1"
 val placeholderapiVersion = "2.11.7"
 val commonsLangVersion = "2.6"
@@ -116,7 +115,6 @@ extra["paper.version"] = paperVersion
 extra["vault.version"] = vaultVersion
 extra["placeholderapi.version"] = placeholderapiVersion
 extra["build.version"] = buildVersion
-extra["build.number"] = finalBuildNumber
 extra["revision"] = finalRevision
 
 
@@ -265,7 +263,6 @@ tasks.processResources {
                 .replace($$"${postgresql.version}", postgresqlVersion)
                 .replace($$"${mongodb.version}", mongodbVersion)
                 .replace($$"${hikaricp.version}", hikaricpVersion)
-                .replace($$"${build.number}", finalBuildNumber)
                 .replace($$"${project.version}", project.version.toString())
                 .replace($$"${project.description}", project.description ?: "")
                 .replace($$"${revision}", project.version.toString())
@@ -320,6 +317,11 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     
     // Remove the "-all" suffix from the shaded JAR filename
     archiveClassifier.set("")
+}
+
+// Disable the standard jar task to avoid producing two JARs
+tasks.jar {
+    enabled = false
 }
 
 // Make the shaded JAR the primary artifact for the 'build' task

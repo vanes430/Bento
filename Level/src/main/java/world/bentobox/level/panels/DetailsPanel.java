@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Enums;
 
-import lv.id.bonne.panelutils.PanelUtils;
 import world.bentobox.bentobox.api.localization.TextVariables;
 import world.bentobox.bentobox.api.panels.PanelItem;
 import world.bentobox.bentobox.api.panels.TemplatedPanel;
@@ -22,6 +21,7 @@ import world.bentobox.bentobox.api.panels.builders.TemplatedPanelBuilder;
 import world.bentobox.bentobox.api.panels.reader.ItemTemplateRecord;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
+import world.bentobox.bentobox.util.Util;
 import world.bentobox.level.Level;
 import world.bentobox.level.objects.IslandLevels;
 import world.bentobox.level.util.Utils;
@@ -727,13 +727,17 @@ public class DetailsPanel {
 			if (!m.isItem()) {
 				m = convertItem(m);
 			}
-			return new BlockDataRec(PanelUtils.getMaterialItem(m),
+			return new BlockDataRec(new ItemStack(m),
 					this.user.getTranslationOrNothing(ref + "id", "[id]", m.name()),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getValue(world, m), 0),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getLimit(m), 0),
 					Utils.prettifyObject(key, this.user), "");
 		} else if (key instanceof EntityType e) {
-			return new BlockDataRec(PanelUtils.getEntityEgg(e),
+			Material egg = Material.matchMaterial(e.name() + "_SPAWN_EGG");
+			if (egg == null) {
+				egg = Material.SPAWNER;
+			}
+			return new BlockDataRec(new ItemStack(egg),
 					this.user.getTranslationOrNothing(ref + "id", "[id]", e.name().concat(SPAWNER)),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getValue(world, e), 0),
 					Objects.requireNonNullElse(this.addon.getBlockConfig().getLimit(e), 0),
