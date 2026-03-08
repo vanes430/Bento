@@ -127,10 +127,6 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/bentoboxworld/</url>
         </repository>
-        <repository>
-            <id>EssentialsX</id>
-            <url>https://repo.essentialsx.net/releases/</url>
-        </repository>
         <!-- CanvasMC API -->
         <repository>
             <id>canvasmc-snapshots</id>
@@ -175,7 +171,8 @@
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
             <version>2.21.2</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/EssentialsX-2.21.2.jar</systemPath>
         </dependency>
     </dependencies>
 
