@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: BentoBox-Jar
-          path: BentoBox/build/libs/BentoBox-*-SNAPSHOT.jar
+          path: BentoBox/build/libs/*.jar
           if-no-files-found: error
 
   build-addons:
@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.addon }}-Jar
-          path: ${{ matrix.addon }}/target/${{ matrix.addon }}-*.jar
+          path: ${{ matrix.addon }}/target/*.jar
           if-no-files-found: error
 
   release:
