@@ -36,23 +36,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import io.th0rgal.oraxen.mechanics.provided.gameplay.furniture.FurnitureMechanic;
-
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.Multisets;
-import com.nexomc.nexo.api.NexoBlocks;
-import com.nexomc.nexo.api.NexoFurniture;
-import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 
-import us.lynuxcraft.deadsilenceiv.advancedchests.AdvancedChestsAPI;
-import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
-import us.lynuxcraft.deadsilenceiv.advancedchests.chest.gui.page.ChestPage;
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.database.objects.Island;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
 import world.bentobox.bentobox.util.Pair;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.level.Level;
@@ -76,7 +65,6 @@ public class IslandLevelCalculator {
 	private final Map<Environment, World> worlds = new EnumMap<>(Environment.class);
 	private final int seaHeight;
 	private final Set<Chunk> chestBlocks = new HashSet<>();
-	private final Set<Chunk> furnitureChunks = new HashSet<>();
 	private final Map<Location, Boolean> spawners = new HashMap<>();
 
 	/**
@@ -400,17 +388,6 @@ public class IslandLevelCalculator {
 		// Count blocks in chests
 		for (BlockState bs : chunk.getTileEntities()) {
 			if (bs instanceof Container container) {
-				if (addon.isAdvChestEnabled()) {
-					AdvancedChest<?, ?> aChest = AdvancedChestsAPI.getChestManager().getAdvancedChest(bs.getLocation());
-					if (aChest != null && aChest.getChestType().getName().equals("NORMAL")) {
-						aChest.getPages().stream().map(ChestPage::getItems).forEach(c -> {
-							for (Object i : c) {
-								countItemStack((ItemStack) i);
-							}
-						});
-						continue;
-					}
-				}
 				// Regular chest
 				container.getSnapshotInventory().forEach(this::countItemStack);
 			}
@@ -418,31 +395,6 @@ public class IslandLevelCalculator {
 	}
 
 	private void countItemStack(ItemStack i) {
-		// Check Oraxen
-		if (BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent() && OraxenHook.exists(i)) {
-			String id = OraxenHook.getIdByItem(i);
-			if (id == null) {
-				return;
-			}
-			id = "oraxen:" + id;
-			for (int c = 0; c < i.getAmount(); c++) {
-				checkBlock(id, false);
-			}
-			return;
-		}
-		// Check Nexo
-		if (addon.isNexo() && NexoItems.exists(i)) {
-			String id = NexoItems.idFromItem(i);
-			if (id == null) {
-				return;
-			}
-			id = "nexo:" + id;
-			for (int c = 0; c < i.getAmount(); c++) {
-				checkBlock(id, false);
-			}
-			return;
-		}
-
 		if (i == null || !i.getType().isBlock())
 			return;
 
@@ -503,10 +455,6 @@ public class IslandLevelCalculator {
 	}
 
 	private void scanAsync(ChunkPair cp) {
-		// Track chunks for furniture entity scanning (Oraxen and Nexo are entity-based)
-		if (BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent() || addon.isNexo()) {
-			furnitureChunks.add(cp.chunk);
-		}
 		// Get the chunk coordinates and island boundaries once per chunk scan
 		int chunkX = cp.chunk.getX() << 4;
 		int chunkZ = cp.chunk.getZ() << 4;
@@ -558,36 +506,6 @@ public class IslandLevelCalculator {
 		boolean belowSeaLevel = seaHeight > 0 && y <= seaHeight;
 		// Create a Location object only when needed for more complex checks.
 		Location loc = null;
-
-		// === Custom Block Hooks (ItemsAdder, Oraxen, Nexo) ===
-		// These hooks can define custom blocks that override vanilla behavior.
-		// They must be checked first.
-		if (addon.isItemsAdder() || BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent() || addon.isNexo()) {
-			loc = new Location(cp.world, globalX, y, globalZ);
-			String customBlockId = null;
-			if (addon.isItemsAdder()) {
-				customBlockId = ItemsAdderHook.getInCustomRegion(loc);
-			}
-			if (customBlockId == null && BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-				String oraxenId = OraxenHook.getOraxenBlockID(loc);
-				if (oraxenId != null) {
-					customBlockId = "oraxen:" + oraxenId; // Make a namespaced ID
-				}
-			}
-			if (customBlockId == null && addon.isNexo()) {
-				CustomBlockMechanic nexoMechanic = NexoBlocks.customBlockMechanic(loc);
-				if (nexoMechanic != null) {
-					customBlockId = "nexo:" + nexoMechanic.getItemID();
-				}
-			}
-
-			if (customBlockId != null) {
-				// If a custom block is found, count it and stop further processing for this
-				// block.
-				checkBlock(customBlockId, belowSeaLevel);
-				return;
-			}
-		}
 
 		// === Spawner Handling ===
 		// Spawners are a special case. Their type needs to be read from the block
@@ -781,7 +699,6 @@ public class IslandLevelCalculator {
 				// Chunk finished
 				// This was the last chunk. Handle spawners, chests and exit
 				handleSpawners().thenCompose(v -> handleChests())
-						.thenCompose(v -> handleOraxenFurniture()).thenCompose(v -> handleNexoFurniture())
 						.thenRun(() -> {
 							this.tidyUp();
 							this.getR().complete(getResults());
@@ -820,93 +737,6 @@ public class IslandLevelCalculator {
 			futures.add(future);
 		}
 		// Return a CompletableFuture that completes when all futures are done
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-	}
-
-	/**
-	 * Scans entities in each island chunk for Oraxen furniture and counts them
-	 * toward the island level. Furniture is entity-based in Oraxen (item displays /
-	 * armor stands), so it is invisible to the normal block scanner. Only the base
-	 * entity of each furniture piece is counted to avoid double-counting
-	 * multi-entity furniture.
-	 *
-	 * @return a CompletableFuture that completes when all chunks have been checked
-	 */
-	private CompletableFuture<Void> handleOraxenFurniture() {
-		if (!BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent() || furnitureChunks.isEmpty()) {
-			return CompletableFuture.completedFuture(null);
-		}
-		int minX = island.getMinProtectedX();
-		int maxX = island.getMaxProtectedX();
-		int minZ = island.getMinProtectedZ();
-		int maxZ = island.getMaxProtectedZ();
-		List<CompletableFuture<Void>> futures = new ArrayList<>();
-		for (Chunk chunk : furnitureChunks) {
-			CompletableFuture<Void> future = Util.getChunkAtAsync(chunk.getWorld(), chunk.getX(), chunk.getZ())
-					.thenAccept(c -> {
-						for (Entity entity : c.getEntities()) {
-							// Only count the root/base entity of each furniture piece
-							if (!OraxenHook.isBaseEntity(entity)) {
-								continue;
-							}
-							Location loc = entity.getLocation();
-							// Confirm entity is within the island's protected bounds
-							if (loc.getBlockX() < minX || loc.getBlockX() >= maxX || loc.getBlockZ() < minZ
-									|| loc.getBlockZ() >= maxZ) {
-								continue;
-							}
-							var mechanic = OraxenHook.getFurnitureMechanic(entity);
-							if (mechanic == null) {
-								continue;
-							}
-							boolean belowSeaLevel = seaHeight > 0 && loc.getBlockY() <= seaHeight;
-							checkBlock("oraxen:" + mechanic.getItemID(), belowSeaLevel);
-						}
-					});
-			futures.add(future);
-		}
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-	}
-
-	/**
-	 * Scans entities in each island chunk for Nexo furniture and counts them toward
-	 * the island level. Nexo furniture is entity-based (ItemDisplay entities), so
-	 * it is invisible to the normal block scanner. Only entities for which a
-	 * FurnitureMechanic can be resolved are counted, which naturally filters to
-	 * base furniture entities.
-	 *
-	 * @return a CompletableFuture that completes when all chunks have been checked
-	 */
-	private CompletableFuture<Void> handleNexoFurniture() {
-		if (!addon.isNexo() || furnitureChunks.isEmpty()) {
-			return CompletableFuture.completedFuture(null);
-		}
-		int minX = island.getMinProtectedX();
-		int maxX = island.getMaxProtectedX();
-		int minZ = island.getMinProtectedZ();
-		int maxZ = island.getMaxProtectedZ();
-		List<CompletableFuture<Void>> futures = new ArrayList<>();
-		for (Chunk chunk : furnitureChunks) {
-			CompletableFuture<Void> future = Util.getChunkAtAsync(chunk.getWorld(), chunk.getX(), chunk.getZ())
-					.thenAccept(c -> {
-						for (Entity entity : c.getEntities()) {
-							Location loc = entity.getLocation();
-							// Confirm entity is within the island's protected bounds
-							if (loc.getBlockX() < minX || loc.getBlockX() >= maxX || loc.getBlockZ() < minZ
-									|| loc.getBlockZ() >= maxZ) {
-								continue;
-							}
-							// getFurnitureMechanic returns non-null only for furniture base entities
-							var mechanic = NexoFurniture.furnitureMechanic(entity);
-							if (mechanic == null) {
-								continue;
-							}
-							boolean belowSeaLevel = seaHeight > 0 && loc.getBlockY() <= seaHeight;
-							checkBlock("nexo:" + mechanic.getItemID(), belowSeaLevel);
-						}
-					});
-			futures.add(future);
-		}
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 	}
 

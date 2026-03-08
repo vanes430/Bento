@@ -92,9 +92,6 @@ version = finalRevision
 // ============================================================================
 // Centralized version management for all external dependencies
 val javaVersion = "25"
-val junitVersion = "5.10.2"
-val mockitoVersion = "5.11.0"
-val mockBukkitVersion = "v1.21-SNAPSHOT"
 val mongodbVersion = "3.12.12"
 val mariadbVersion = "3.0.5"
 val mysqlVersion = "8.0.27"
@@ -102,12 +99,7 @@ val postgresqlVersion = "42.2.18"
 val hikaricpVersion = "5.0.1"
 val paperVersion = "1.21.11-R0.1-SNAPSHOT"
 val vaultVersion = "1.7.1"
-val levelVersion = "2.21.3"
 val placeholderapiVersion = "2.11.7"
-val awaitilityVersion = "4.2.2"
-val fancyNpcsVersion = "2.4.4"
-val znpcsplusApiVersion = "2.0.0-SNAPSHOT"
-val fancyHologramsVersion = "2.4.1"
 val commonsLangVersion = "2.6"
 val jaxbApiVersion = "2.3.0"
 val jdtAnnotationVersion = "2.2.600"
@@ -115,9 +107,6 @@ val multilibVersion = "1.2.5"
 
 // Store versions in extra properties for resource filtering (used in plugin.yml, config.yml)
 extra["java.version"] = javaVersion
-extra["junit.version"] = junitVersion
-extra["mockito.version"] = mockitoVersion
-extra["mock-bukkit.version"] = mockBukkitVersion
 extra["mongodb.version"] = mongodbVersion
 extra["mariadb.version"] = mariadbVersion
 extra["mysql.version"] = mysqlVersion
@@ -125,7 +114,6 @@ extra["postgresql.version"] = postgresqlVersion
 extra["hikaricp.version"] = hikaricpVersion
 extra["paper.version"] = paperVersion
 extra["vault.version"] = vaultVersion
-extra["level.version"] = levelVersion
 extra["placeholderapi.version"] = placeholderapiVersion
 extra["build.version"] = buildVersion
 extra["build.number"] = finalBuildNumber
@@ -212,29 +200,11 @@ repositories {
 // Defines all external libraries needed for compilation and testing
 
 dependencies {
-    // --- Test Dependencies: Only used during testing, not in production ---
-    testImplementation(platform("org.junit:junit-bom:$junitVersion"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitVersion")
-    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-    testImplementation("com.github.MockBukkit:MockBukkit:$mockBukkitVersion")
-    testImplementation("org.awaitility:awaitility:$awaitilityVersion")
-    testImplementation("io.canvasmc.canvas:canvas-api:$paperVersion")
-    testImplementation("com.github.MilkBowl:VaultAPI:$vaultVersion")
-    testImplementation("me.clip:placeholderapi:$placeholderapiVersion")
-    testImplementation("commons-lang:commons-lang:$commonsLangVersion")
-
     // --- Compile Only Dependencies: Provided by the server at runtime ---
     compileOnly("org.mongodb:mongodb-driver:$mongodbVersion")
     compileOnly("com.zaxxer:HikariCP:$hikaricpVersion")
     compileOnly("com.github.MilkBowl:VaultAPI:$vaultVersion")
     compileOnly("me.clip:placeholderapi:$placeholderapiVersion")
-    compileOnly("de.oliver:FancyNpcs:$fancyNpcsVersion")
-    compileOnly("lol.pyr:znpcsplus-api:$znpcsplusApiVersion")
-    compileOnly("de.oliver:FancyHolograms:$fancyHologramsVersion")
-    compileOnly("world.bentobox:level:$levelVersion-SNAPSHOT")
     compileOnly("commons-lang:commons-lang:$commonsLangVersion")
 
     // --- Implementation Dependencies: Shaded into final JAR ---

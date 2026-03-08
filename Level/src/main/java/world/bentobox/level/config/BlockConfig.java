@@ -19,11 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 
-import com.nexomc.nexo.api.NexoItems;
-
 import world.bentobox.bentobox.BentoBox;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
 import world.bentobox.level.Level;
 
 /**
@@ -73,7 +69,7 @@ public class BlockConfig {
 				// Convert old materials to namespaced keys
 				key = convertKey(blocks, key);
 				// Validate
-				if (isMaterial(key) || isSpawner(key) || isOther(key)) {
+				if (isMaterial(key) || isSpawner(key)) {
 					// Store for lookup
 					this.blockValues.put(key.toLowerCase(Locale.ENGLISH), blocks.getInt(key));
 				} else {
@@ -119,18 +115,6 @@ public class BlockConfig {
 																								// "entity-type_spawner"
 				.filter(s -> !this.blockValues.containsKey(s)) // Check if the blockValues map contains this spawner
 				.forEach(m -> blocks.set(m, 1)); // Add a default value of 1
-	}
-
-	private boolean isOther(String key) {
-		// Maybe a custom name space
-		if (key.startsWith("oraxen:") && BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-			return OraxenHook.exists(key.substring(7));
-		}
-		if (key.startsWith("nexo:") && addon.isNexo()) {
-			return NexoItems.exists(key.substring(5));
-		}
-		// Check ItemsAdder
-		return addon.isItemsAdder() && ItemsAdderHook.isInRegistry(key);
 	}
 
 	private boolean isSpawner(String key) {
@@ -187,7 +171,7 @@ public class BlockConfig {
 					// Convert old materials to namespaced keys
 					key = convertKey(blocks, key);
 					// Validate
-					if (isMaterial(key) || isSpawner(key) || isOther(key)) {
+					if (isMaterial(key) || isSpawner(key)) {
 						// Store for lookup
 						values.put(key, blocks.getInt(key));
 					} else {

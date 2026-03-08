@@ -40,8 +40,6 @@ import world.bentobox.bentobox.blueprints.dataobjects.BlueprintBlock;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintCreatureSpawner;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintEntity;
 import world.bentobox.bentobox.database.objects.Island;
-import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.nms.PasteHandler;
 
 /**
@@ -232,32 +230,6 @@ public class DefaultPasteUtil {
 	static boolean spawnBlueprintEntity(BlueprintEntity k, Location location, Island island) {
 		// Display Entity (holograms, etc.)
 		k.setDisplay(location);
-		// FancyNpc entity
-		if (k.getNpc() != null
-				&& plugin.getHooks().getHook("FancyNpcs").filter(mmh -> mmh instanceof FancyNpcsHook).map(mmh -> {
-					try {
-						return ((FancyNpcsHook) mmh).spawnNpc(k.getNpc(), location);
-					} catch (InvalidConfigurationException e) {
-						plugin.logError("FancyNpc loading failed in blueprint.");
-						return false;
-					}
-				}).orElse(false)) {
-			// Npc has spawned.
-			return false;
-		}
-		// ZNPCsPlus
-		if (k.getNpc() != null
-				&& plugin.getHooks().getHook("ZNPCsPlus").filter(mmh -> mmh instanceof ZNPCsPlusHook).map(znpch -> {
-					try {
-						return ((ZNPCsPlusHook) znpch).spawnNpc(k.getNpc(), location);
-					} catch (InvalidConfigurationException e) {
-						plugin.logError("ZNPCsPlus loading failed in blueprint.");
-						return false;
-					}
-				}).orElse(false)) {
-			// Npc has spawned.
-			return false;
-		}
 
 		if (k.getType() == null) {
 			// Nothing

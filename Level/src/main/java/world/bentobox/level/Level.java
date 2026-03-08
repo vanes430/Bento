@@ -55,7 +55,6 @@ public class Level extends Addon {
 	private BlockConfig blockConfig;
 	private Pipeliner pipeliner;
 	private LevelsManager manager;
-	private boolean advChestEnabled;
 	private final List<GameModeAddon> registeredGameModes = new ArrayList<>();
 
 	/**
@@ -106,7 +105,6 @@ public class Level extends Addon {
 		registerAllListeners();
 		registerGameModeCommands();
 		registerRequestHandlers();
-		hookAdvancedChests();
 
 		if (this.isEnabled()) {
 			hookExtensions();
@@ -147,22 +145,6 @@ public class Level extends Addon {
 	private void hookPlugin(String pluginName, Runnable hookAction) {
 		if (!settings.getDisabledPluginHooks().contains(pluginName)) {
 			hookAction.run();
-		}
-	}
-
-	private void hookAdvancedChests() {
-		if (!settings.getDisabledPluginHooks().contains("AdvancedChests")) {
-			Plugin advChest = Bukkit.getPluginManager().getPlugin("AdvancedChests");
-			advChestEnabled = advChest != null;
-			if (advChestEnabled) {
-				if (compareVersions(advChest.getDescription().getVersion(), "23.0") > 0) {
-					log("Hooked into AdvancedChests.");
-				} else {
-					logError("Could not hook into AdvancedChests " + advChest.getDescription().getVersion()
-							+ " - requires version 23.0 or later");
-					advChestEnabled = false;
-				}
-			}
 		}
 	}
 
@@ -292,13 +274,6 @@ public class Level extends Addon {
 	void setSettings(ConfigSettings configSettings) {
 		this.settings = configSettings;
 
-	}
-
-	/**
-	 * @return the advChestEnabled
-	 */
-	public boolean isAdvChestEnabled() {
-		return advChestEnabled;
 	}
 
 	/**
@@ -453,18 +428,6 @@ public class Level extends Addon {
 	 */
 	public Warp getWarpHook() {
 		return this.warpHook;
-	}
-
-	public boolean isItemsAdder() {
-		return !getSettings().isDisableItemsAdder() && getPlugin().getHooks().getHook("ItemsAdder").isPresent();
-	}
-
-	/**
-	 * @return true if the Nexo plugin is enabled and not disabled in config
-	 */
-	public boolean isNexo() {
-		return !getSettings().getDisabledPluginHooks().contains("Nexo")
-				&& Bukkit.getPluginManager().isPluginEnabled("Nexo");
 	}
 
 }

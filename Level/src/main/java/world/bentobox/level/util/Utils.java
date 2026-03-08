@@ -12,7 +12,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import world.bentobox.bentobox.api.user.User;
-import world.bentobox.bentobox.hooks.LangUtilsHook;
 
 public class Utils {
 
@@ -169,7 +168,7 @@ public class Utils {
 
 			if (object instanceof Material) {
 				// Fallback to our hook for Material.
-				return LangUtilsHook.getMaterialName((Material) object, user);
+				return world.bentobox.bentobox.util.Util.prettifyText(key);
 			} else {
 				return world.bentobox.bentobox.util.Util.prettifyText(key);
 			}
@@ -189,7 +188,7 @@ public class Utils {
 				return translation;
 
 			// Fallback to our hook for EntityType.
-			return LangUtilsHook.getEntityName((EntityType) object, user);
+			return world.bentobox.bentobox.util.Util.prettifyText(key);
 		}
 
 		// In case of an unexpected type, return an empty string.

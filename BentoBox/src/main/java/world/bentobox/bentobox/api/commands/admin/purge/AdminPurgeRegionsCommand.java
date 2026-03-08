@@ -32,7 +32,6 @@ import world.bentobox.bentobox.managers.island.IslandGrid;
 import world.bentobox.bentobox.managers.island.IslandGrid.IslandData;
 import world.bentobox.bentobox.util.Pair;
 import world.bentobox.bentobox.util.Util;
-import world.bentobox.level.Level;
 
 public class AdminPurgeRegionsCommand extends CompositeCommand implements Listener {
 
@@ -461,14 +460,7 @@ public class AdminPurgeRegionsCommand extends CompositeCommand implements Listen
 		}).findFirst().orElse(false)) {
 			return false;
 		}
-		// Level check
-		boolean levelCheck = getPlugin().getAddonsManager().getAddonByName("Level").map(l -> ((Level) l)
-				.getIslandLevel(getWorld(), island.getOwner()) >= getPlugin().getSettings().getIslandPurgeLevel())
-				.orElse(false);
-		if (levelCheck) {
-			// Island level is too high
-			return true;
-		}
+
 		return island.isPurgeProtected() || island.isSpawn() || !island.isOwned();
 	}
 

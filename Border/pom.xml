@@ -225,6 +225,13 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>${java.version}</release>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-J-XX:+UnlockExperimentalVMOptions</arg>
+                        <arg>-J-Djdk.graal.CompilerConfiguration=enterprise</arg>
+                        <arg>-J-XX:+EnableJVMCI</arg>
+                        <arg>-J-XX:+UseJVMCICompiler</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

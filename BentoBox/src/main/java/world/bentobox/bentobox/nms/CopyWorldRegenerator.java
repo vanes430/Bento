@@ -43,8 +43,6 @@ import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.hooks.Hook;
 import world.bentobox.bentobox.database.objects.IslandDeletion;
-import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.util.MyBiomeGrid;
 import world.bentobox.bentobox.util.Util;
 
@@ -59,18 +57,9 @@ import world.bentobox.bentobox.util.Util;
 public abstract class CopyWorldRegenerator implements WorldRegenerator {
 
 	private final BentoBox plugin;
-	private final Optional<FancyNpcsHook> npc;
-	private final Optional<ZNPCsPlusHook> znpc;
 
 	protected CopyWorldRegenerator() {
 		this.plugin = BentoBox.getInstance();
-		// Fancy NPCs Hook
-		npc = plugin.getHooks().getHook("FancyNpcs").filter(FancyNpcsHook.class::isInstance)
-				.map(FancyNpcsHook.class::cast);
-		// ZNPCs Plus Hook
-		znpc = plugin.getHooks().getHook("ZNPCsPlus").filter(ZNPCsPlusHook.class::isInstance)
-				.map(ZNPCsPlusHook.class::cast);
-
 	}
 
 	/**
@@ -242,11 +231,6 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
 						.filter(e -> !(e instanceof Player)
 								&& di.inBounds(e.getLocation().getBlockX(), e.getLocation().getBlockZ()))
 						.forEach(Entity::remove);
-				// Remove any NPCs
-				// Fancy NPCs Hook
-				npc.ifPresent(hook -> hook.removeNPCsInChunk(chunk));
-				// ZNPCs Plus Hook
-				znpc.ifPresent(hook -> hook.removeNPCsInChunk(chunk));
 			});
 		});
 

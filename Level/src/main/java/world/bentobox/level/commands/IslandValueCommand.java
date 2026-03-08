@@ -15,8 +15,6 @@ import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.localization.TextVariables;
 import world.bentobox.bentobox.api.user.User;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.level.Level;
 import world.bentobox.level.objects.IslandLevels;
@@ -70,23 +68,6 @@ public class IslandValueCommand extends CompositeCommand {
 		if (mainHandItem.getType() == Material.AIR) {
 			Utils.sendMessage(user, user.getTranslation("level.conversations.empty-hand"));
 			return;
-		}
-
-		// Oraxen
-		if (BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-			String id = OraxenHook.getIdByItem(mainHandItem);
-			if (id != null) {
-				printValue(user, "oraxen:" + id);
-				return;
-			}
-		}
-		// ItemsAdder
-		if (addon.isItemsAdder()) {
-			Optional<String> id = ItemsAdderHook.getNamespacedId(mainHandItem);
-			if (id.isPresent()) {
-				printValue(user, id.get());
-				return;
-			}
 		}
 
 		printValue(user, mainHandItem.getType());

@@ -27,7 +27,6 @@ import world.bentobox.bentobox.api.panels.builders.PanelItemBuilder;
 import world.bentobox.bentobox.api.panels.builders.TemplatedPanelBuilder;
 import world.bentobox.bentobox.api.panels.reader.ItemTemplateRecord;
 import world.bentobox.bentobox.api.user.User;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.level.Level;
 import world.bentobox.level.util.ConversationUtils;
@@ -591,10 +590,6 @@ public class ValuePanel {
 		if (icon == null && key.endsWith("_spawner")) {
 			icon = Registry.MATERIAL.get(NamespacedKey.fromString(key.substring(0, key.length() - 2) + "_egg"));
 		}
-		// ItemsAdder
-		if (icon == null && addon.isItemsAdder() && ItemsAdderHook.isInRegistry(key)) {
-			icon = ItemsAdderHook.getItemStack(key).map(ItemStack::getType).orElse(null);
-		}
 		if (icon != null && icon.isItem()) {
 			return icon;
 		}
@@ -671,10 +666,6 @@ public class ValuePanel {
 			}
 
 		}
-		// Try Oraxen
-		if (key.startsWith("oraxen:") && BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-			return Material.PAPER;
-		}
 		return null;
 	}
 
@@ -709,9 +700,6 @@ public class ValuePanel {
 		// Determine icon and display material text
 		Material icon = getIcon(key);
 		builder.icon((icon == null || icon == Material.AIR) ? Material.PAPER : icon);
-		if (key.startsWith("oraxen:")) {
-			key = key.substring(7);
-		}
 		String displayMaterial = (icon == null) ? Util.prettifyText(key) : Utils.prettifyObject(key, user);
 		// Special handling for spawn eggs
 		if (icon != null && icon.name().endsWith("_SPAWN_EGG")) {

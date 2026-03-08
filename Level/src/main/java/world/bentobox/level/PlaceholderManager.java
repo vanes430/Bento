@@ -23,16 +23,10 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.nexomc.nexo.api.NexoBlocks;
-import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
-
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
-import world.bentobox.bentobox.hooks.ItemsAdderHook;
-import world.bentobox.bentobox.hooks.OraxenHook;
 import world.bentobox.bentobox.managers.PlaceholdersManager;
 import world.bentobox.bentobox.managers.RanksManager;
 import world.bentobox.level.objects.IslandLevels;
@@ -422,30 +416,6 @@ public class PlaceholderManager {
 			return Material.SPAWNER; // Return generic spawner material if state invalid
 		}
 
-		// Check Oraxen custom blocks (noteblock/stringblock/chorusblock mechanics)
-		if (BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-			String oraxenId = OraxenHook.getOraxenBlockID(block.getLocation());
-			if (oraxenId != null) {
-				return "oraxen:" + oraxenId;
-			}
-		}
-
-		// Check Nexo custom blocks
-		if (addon.isNexo()) {
-			CustomBlockMechanic nexoMechanic = NexoBlocks.customBlockMechanic(block.getLocation());
-			if (nexoMechanic != null) {
-				return "nexo:" + nexoMechanic.getItemID();
-			}
-		}
-
-		// Check ItemsAdder custom blocks
-		if (addon.isItemsAdder()) {
-			String iaId = ItemsAdderHook.getInCustomRegion(block.getLocation());
-			if (iaId != null) {
-				return iaId;
-			}
-		}
-
 		// Fallback to the Material for regular blocks
 		return type;
 	}
@@ -524,31 +494,7 @@ public class PlaceholderManager {
 			}
 		} // End of Spawner handling
 
-		// 2. Handle potential custom items (e.g., ItemsAdder)
-		if (addon.isItemsAdder()) {
-			Optional<String> customId = ItemsAdderHook.getNamespacedId(itemStack);
-			if (customId.isPresent()) {
-				return customId.get(); // Return the String ID from ItemsAdder
-			}
-		}
-
-		// 3. Handle Oraxen custom items
-		if (BentoBox.getInstance().getHooks().getHook("Oraxen").isPresent()) {
-			Optional<String> oraxenId = OraxenHook.getNamespacedId(itemStack);
-			if (oraxenId.isPresent()) {
-				return "oraxen:" + oraxenId.get();
-			}
-		}
-
-		// 4. Handle Nexo custom items
-		if (addon.isNexo()) {
-			String nexoId = NexoItems.idFromItem(itemStack);
-			if (nexoId != null) {
-				return "nexo:" + nexoId;
-			}
-		}
-
-		// 5. Fallback to Material for regular items that represent blocks
+		// 2. Fallback to Material for regular items that represent blocks
 		return type.isBlock() ? type : null;
 	}
 
@@ -557,9 +503,8 @@ public class PlaceholderManager {
 	 * identifier object used by IslandLevels.
 	 *
 	 * - Handles "pig_spawner" style keys and resolves them to EntityType where
-	 * possible. - Resolves namespaced Material keys using Bukkit's Registry. -
-	 * Returns the original string for custom items (ItemsAdder) when present in
-	 * registry. - Returns Material.SPAWNER for generic "spawner" key, otherwise
+	 * possible. - Resolves namespaced Material keys using Bukkit's Registry.
+	 * - Returns Material.SPAWNER for generic "spawner" key, otherwise
 	 * null if unresolvable.
 	 *
 	 * @param configKey

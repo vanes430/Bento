@@ -40,8 +40,6 @@ import world.bentobox.bentobox.blueprints.dataobjects.BlueprintBlock;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintCreatureSpawner;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintEntity;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintTrialSpawner;
-import world.bentobox.bentobox.hooks.FancyNpcsHook;
-import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 
 /**
  * The clipboard provides the holding spot for an active blueprint that is being
@@ -70,8 +68,6 @@ public class BlueprintClipboard {
 	private final Map<Vector, BlueprintBlock> bpAttachable = new LinkedHashMap<>();
 	private final Map<Vector, BlueprintBlock> bpBlocks = new LinkedHashMap<>();
 	private final BentoBox plugin = BentoBox.getInstance();
-	private final Optional<FancyNpcsHook> npc;
-	private final Optional<ZNPCsPlusHook> znpc;
 
 	/**
 	 * Create a clipboard for blueprint
@@ -80,17 +76,14 @@ public class BlueprintClipboard {
 	 *            - the blueprint to load into the clipboard
 	 */
 	public BlueprintClipboard(@NonNull Blueprint blueprint) {
-		this();
 		this.blueprint = blueprint;
 	}
 
+	/**
+	 * Create a clipboard for blueprint
+	 */
 	public BlueprintClipboard() {
-		// Fancy NPCs Hook
-		npc = plugin.getHooks().getHook("FancyNpcs").filter(FancyNpcsHook.class::isInstance)
-				.map(FancyNpcsHook.class::cast);
-		// ZNPCs Plus Hook
-		znpc = plugin.getHooks().getHook("ZNPCsPlus").filter(ZNPCsPlusHook.class::isInstance)
-				.map(ZNPCsPlusHook.class::cast);
+		// Empty constructor
 	}
 
 	/**
@@ -145,11 +138,6 @@ public class BlueprintClipboard {
 	private void copyAsync(World world, User user, List<Vector> vectorsToCopy, int speed, boolean copyAir,
 			boolean copyBiome, boolean noWater) {
 		copying = false;
-		// FancyNpcs
-		// Add all the citizens for the area in one go. This is pretty fast.
-		npc.ifPresent(fancyNpcsHook -> bpEntities.putAll(fancyNpcsHook.getNpcsInArea(world, vectorsToCopy, origin)));
-		// ZNPCsPlus NPCs
-		znpc.ifPresent(znpCsPlusHook -> bpEntities.putAll(znpCsPlusHook.getNpcsInArea(world, vectorsToCopy, origin)));
 
 		// Repeating copy task
 		copyTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, t -> {

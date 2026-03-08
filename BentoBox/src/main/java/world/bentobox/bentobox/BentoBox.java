@@ -24,10 +24,8 @@ import world.bentobox.bentobox.api.user.Notifier;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.commands.BentoBoxCommand;
 import world.bentobox.bentobox.database.DatabaseSetup;
-import world.bentobox.bentobox.hooks.FancyNpcsHook;
 import world.bentobox.bentobox.hooks.MultipaperHook;
 import world.bentobox.bentobox.hooks.VaultHook;
-import world.bentobox.bentobox.hooks.ZNPCsPlusHook;
 import world.bentobox.bentobox.hooks.placeholders.PlaceholderAPIHook;
 import world.bentobox.bentobox.listeners.BannedCommands;
 import world.bentobox.bentobox.listeners.BlockEndDragon;
@@ -182,11 +180,6 @@ public class BentoBox extends JavaPlugin implements Listener {
 		hooksManager.registerHook(new MultipaperHook());
 
 		hooksManager.registerHook(new VaultHook());
-
-		// FancyNpcs
-		hooksManager.registerHook(new FancyNpcsHook());
-		// ZNPCsPlus
-		hooksManager.registerHook(new ZNPCsPlusHook());
 
 		hooksManager.registerHook(new PlaceholderAPIHook());
 		// Setup the Placeholders manager
