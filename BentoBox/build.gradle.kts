@@ -120,7 +120,7 @@ val commonsLangVersion = "2.6"
 val jaxbApiVersion = "2.3.0"
 val gsonRecordTypeAdapterFactoryVersion = "0.3.0"
 val jdtAnnotationVersion = "2.2.600"
-val multilibVersion = "1.1.13"
+val multilibVersion = "1.2.5"
 val oraxenVersion = "1.193.1"
 
 // Store versions in extra properties for resource filtering (used in plugin.yml, config.yml)
@@ -188,6 +188,8 @@ tasks.compileTestJava {
 // ============================================================================
 // Defines where dependencies are downloaded from (in order of precedence)
 repositories {
+    // Clojars - Fast and stable, used for multilib
+    maven("https://repo.clojars.org/") { name = "Clojars" }
     // Gradle Plugin Portal - for resolving Gradle plugins
     gradlePluginPortal()
     // PaperMC Maven Repository - for Paper API and related libraries
@@ -205,7 +207,6 @@ repositories {
     maven("https://repo.onarandombox.com/multiverse-releases") { name = "Multiverse-Releases" }
     maven("https://repo.onarandombox.com/multiverse-snapshots") { name = "Multiverse-Snapshots" }
     maven("https://mvn.lumine.io/repository/maven-public/") { name = "Lumine-Releases" } // Mythic mobs
-    maven("https://repo.clojars.org/") { name = "Clojars" }
     maven("https://repo.fancyplugins.de/releases") { name = "FancyPlugins-Releases" }
     maven("https://repo.pyr.lol/snapshots") { name = "Pyr-Snapshots" }
     maven("https://maven.devs.beer/") { name = "MatteoDev" }
