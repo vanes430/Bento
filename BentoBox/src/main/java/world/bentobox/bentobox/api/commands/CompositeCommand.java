@@ -101,7 +101,7 @@ public abstract class CompositeCommand extends Command implements PluginIdentifi
 	 * defaultCommandRank: Default rank required if command is rank-configurable
 	 */
 	private String parameters = "";
-	private String permission = "";
+	protected String permission = "";
 	private int defaultCommandRank = RanksManager.OWNER_RANK;
 
 	/**

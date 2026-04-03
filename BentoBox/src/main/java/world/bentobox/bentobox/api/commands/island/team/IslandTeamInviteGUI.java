@@ -231,28 +231,6 @@ public class IslandTeamInviteGUI {
 				plugin.log("Invite failed: " + player.getName() + " by " + user.getName() + " to join island in "
 						+ itc.getWorld().getName());
 			}
-		} else if (clickType.equals(ClickType.RIGHT)) {
-			// Close inventory after one tick to allow the no pickup click return to occur
-			Bukkit.getGlobalRegionScheduler().run(plugin, t -> user.closeInventory());
-			if (this.itc.getCoopCommand().canExecute(user, itic.getLabel(), List.of(player.getName()))) {
-				plugin.log("Coop: " + player.getName() + " cooped " + user.getName() + " to island in "
-						+ itc.getWorld().getName());
-				this.itc.getCoopCommand().execute(user, itic.getLabel(), List.of(player.getName()));
-			} else {
-				plugin.log("Coop failed: " + player.getName() + "'s coop to " + user.getName()
-						+ " failed for island in " + itc.getWorld().getName());
-			}
-		} else if (clickType.equals(ClickType.SHIFT_LEFT)) {
-			// Close inventory after one tick to allow the no pickup click return to occur
-			Bukkit.getGlobalRegionScheduler().run(plugin, t -> user.closeInventory());
-			if (this.itc.getTrustCommand().canExecute(user, itic.getLabel(), List.of(player.getName()))) {
-				plugin.log("Trust: " + player.getName() + " trusted " + user.getName() + " to island in "
-						+ itc.getWorld().getName());
-				this.itc.getTrustCommand().execute(user, itic.getLabel(), List.of(player.getName()));
-			} else {
-				plugin.log("Trust failed: " + player.getName() + "'s trust failed for " + user.getName()
-						+ " for island in " + itc.getWorld().getName());
-			}
 		}
 		return true;
 	}

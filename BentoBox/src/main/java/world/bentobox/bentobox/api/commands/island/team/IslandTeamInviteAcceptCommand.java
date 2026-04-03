@@ -48,6 +48,7 @@ public class IslandTeamInviteAcceptCommand extends ConfirmableCommand {
 			user.sendMessage("commands.island.team.invite.errors.none-invited-you");
 			return false;
 		}
+
 		// Get the island owner
 		UUID prospectiveOwnerUUID = itc.getInviter(playerUUID);
 		if (prospectiveOwnerUUID == null) {
@@ -86,87 +87,8 @@ public class IslandTeamInviteAcceptCommand extends ConfirmableCommand {
 	public boolean execute(User user, String label, List<String> args) {
 		// Get the invite
 		TeamInvite invite = itc.getInvite(user.getUniqueId());
-		switch (invite.getType()) {
-			case COOP -> {
-				if (!checkForceFlag(user, args)) {
-					return false;
-				}
-				acceptCoopInvite(user, invite);
-			}
-			case TRUST -> {
-				if (!checkForceFlag(user, args)) {
-					return false;
-				}
-				acceptTrustInvite(user, invite);
-			}
-			default -> {
-				if (getIWM().getWorldSettings(getWorld()).isDisallowTeamMemberIslands()) {
-					if (!checkForceFlag(user, args,
-							user.getTranslation("commands.island.team.invite.accept.confirmation"))) {
-						return false;
-					}
-					acceptTeamInvite(user, invite);
-				} else {
-					acceptTeamInvite(user, invite);
-				}
-			}
-		}
+		acceptTeamInvite(user, invite);
 		return true;
-	}
-
-	void acceptTrustInvite(User user, TeamInvite invite) {
-		// Remove the invite
-		itc.removeInvite(user.getUniqueId());
-		User inviter = User.getInstance(invite.getInviter());
-		Island island = getIslands().getIslandById(invite.getIslandID()).orElse(null);
-		if (island != null) {
-			if (island.getMemberSet(RanksManager.TRUSTED_RANK, false).size() > getIslands().getMaxMembers(island,
-					RanksManager.TRUSTED_RANK)) {
-				user.sendMessage("commands.island.team.trust.is-full");
-				return;
-			}
-			island.setRank(user, RanksManager.TRUSTED_RANK);
-			IslandEvent.builder().island(island).involvedPlayer(user.getUniqueId()).admin(false)
-					.reason(IslandEvent.Reason.RANK_CHANGE).rankChange(island.getRank(user), RanksManager.TRUSTED_RANK)
-					.build();
-			if (inviter.isOnline()) {
-				inviter.sendMessage("commands.island.team.trust.success", TextVariables.NAME, user.getName(),
-						TextVariables.DISPLAY_NAME, user.getDisplayName());
-			}
-			if (inviter.isPlayer()) {
-				user.sendMessage("commands.island.team.trust.you-are-trusted", TextVariables.NAME, inviter.getName(),
-						TextVariables.DISPLAY_NAME, inviter.getDisplayName());
-			}
-			// Add history record
-			island.log(new LogEntry.Builder(LogType.TRUSTED).data(user.getUniqueId().toString(), "trusted")
-					.data(invite.getInviter().toString(), "trusted by").build());
-		}
-	}
-
-	void acceptCoopInvite(User user, TeamInvite invite) {
-		// Remove the invite
-		itc.removeInvite(user.getUniqueId());
-		User inviter = User.getInstance(invite.getInviter());
-		Island island = getIslands().getIslandById(invite.getIslandID()).orElse(null);
-		if (island != null) {
-			if (island.getMemberSet(RanksManager.COOP_RANK, false).size() > getIslands().getMaxMembers(island,
-					RanksManager.COOP_RANK)) {
-				user.sendMessage("commands.island.team.coop.is-full");
-				return;
-			}
-			island.setRank(user, RanksManager.COOP_RANK);
-			IslandEvent.builder().island(island).involvedPlayer(user.getUniqueId()).admin(false)
-					.reason(IslandEvent.Reason.RANK_CHANGE).rankChange(island.getRank(user), RanksManager.COOP_RANK)
-					.build();
-			if (inviter.isOnline()) {
-				inviter.sendMessage("commands.island.team.coop.success", TextVariables.NAME, user.getName(),
-						TextVariables.DISPLAY_NAME, user.getDisplayName());
-			}
-			if (inviter.isPlayer()) {
-				user.sendMessage("commands.island.team.coop.you-are-a-coop-member", TextVariables.NAME,
-						inviter.getName(), TextVariables.DISPLAY_NAME, inviter.getDisplayName());
-			}
-		}
 	}
 
 	void acceptTeamInvite(User user, TeamInvite invite) {

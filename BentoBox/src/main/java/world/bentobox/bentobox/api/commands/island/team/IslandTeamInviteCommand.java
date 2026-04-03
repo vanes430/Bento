@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import world.bentobox.bentobox.api.commands.CompositeCommand;
+import world.bentobox.bentobox.api.commands.ConfirmableCommand;
 import world.bentobox.bentobox.api.events.IslandBaseEvent;
 import world.bentobox.bentobox.api.events.team.TeamEvent;
 import world.bentobox.bentobox.api.localization.TextVariables;
@@ -44,13 +44,10 @@ import world.bentobox.bentobox.util.Util;
  * <li>Only one active invite per player</li>
  * </ul>
  */
-public class IslandTeamInviteCommand extends CompositeCommand {
+public class IslandTeamInviteCommand extends ConfirmableCommand {
 
 	/** Parent team command reference */
 	private final IslandTeamCommand itc;
-
-	/** Currently invited player - used between canExecute and execute */
-	private @Nullable User invitedPlayer;
 
 	/** GUI template items */
 	private @Nullable TemplateItem border;
@@ -134,8 +131,7 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 			user.sendMessage("general.errors.unknown-player", TextVariables.NAME, playerName);
 			return false;
 		}
-		// Write to field as this is used by execute method
-		invitedPlayer = User.getInstance(invitedPlayerUUID);
+		User invitedPlayer = User.getInstance(invitedPlayerUUID);
 		if (!canInvitePlayer(user, invitedPlayer)) {
 			return false;
 		}
@@ -146,14 +142,17 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 			return false;
 		}
 
-		// Player cannot invite someone already on a team
-		if (getIWM().getWorldSettings(getWorld()).isDisallowTeamMemberIslands()
-				&& getIslands().inTeam(getWorld(), invitedPlayerUUID)) {
+		// Player cannot invite someone already on a team or having an island
+		if (getIslands().inTeam(getWorld(), invitedPlayerUUID)) {
 			user.sendMessage("commands.island.team.invite.errors.already-on-team");
 			return false;
 		}
+		if (getIslands().hasIsland(getWorld(), invitedPlayerUUID)) {
+			user.sendMessage("commands.island.team.invite.errors.already-has-island");
+			return false;
+		}
 
-		if (isInvitedByUser(invitedPlayerUUID, playerUUID) && isInviteTypeTeam(invitedPlayerUUID)) {
+		if (isInvitedByUser(invitedPlayerUUID, playerUUID)) {
 			user.sendMessage("commands.island.team.invite.errors.you-have-already-invited");
 			return false;
 		}
@@ -179,11 +178,7 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 	}
 
 	private boolean isInvitedByUser(UUID invitedPlayerUUID, UUID inviterUUID) {
-		return itc.isInvited(invitedPlayerUUID) && itc.getInviter(invitedPlayerUUID).equals(inviterUUID);
-	}
-
-	private boolean isInviteTypeTeam(UUID invitedPlayerUUID) {
-		return Objects.requireNonNull(itc.getInvite(invitedPlayerUUID)).getType().equals(Type.TEAM);
+		return itc.isInvited(invitedPlayerUUID) && inviterUUID.equals(itc.getInviter(invitedPlayerUUID));
 	}
 
 	/**
@@ -192,9 +187,15 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 	 */
 	@Override
 	public boolean execute(User user, String label, List<String> args) {
-		// Rare case when invited player is null. Could be a race condition.
-		if (invitedPlayer == null)
+		if (args.size() != 1)
 			return false;
+
+		UUID invitedPlayerUUID = getPlayers().getUUID(args.getFirst());
+		if (invitedPlayerUUID == null)
+			return false;
+
+		User invitedPlayer = User.getInstance(invitedPlayerUUID);
+
 		// If that player already has an invitation out then retract it.
 		// Players can only have one invite one at a time - interesting
 		if (itc.isInvited(invitedPlayer.getUniqueId())) {
@@ -204,14 +205,12 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 		Island island = getIslands().getIsland(getWorld(), user.getUniqueId());
 		if (island == null) {
 			user.sendMessage("general.errors.no-island");
-			invitedPlayer = null;
 			return false;
 		}
 		// Fire event so add-ons can run commands, etc.
 		IslandBaseEvent e = TeamEvent.builder().island(island).reason(TeamEvent.Reason.INVITE)
 				.involvedPlayer(invitedPlayer.getUniqueId()).build();
 		if (e.getNewEvent().map(IslandBaseEvent::isCancelled).orElse(e.isCancelled())) {
-			invitedPlayer = null;
 			return false;
 		}
 		// Put the invited player (key) onto the list with inviter (value)
@@ -221,15 +220,8 @@ public class IslandTeamInviteCommand extends CompositeCommand {
 		user.sendMessage("commands.island.team.invite.invitation-sent", TextVariables.NAME, invitedPlayer.getName(),
 				TextVariables.DISPLAY_NAME, invitedPlayer.getDisplayName());
 		// Send message to online player
-		invitedPlayer.sendMessage("commands.island.team.invite.name-has-invited-you", TextVariables.NAME,
-				user.getName(), TextVariables.DISPLAY_NAME, user.getDisplayName());
-		invitedPlayer.sendMessage("commands.island.team.invite.to-accept-or-reject", TextVariables.LABEL,
-				getTopLabel());
-		if (getIWM().getWorldSettings(getWorld()).isDisallowTeamMemberIslands()
-				&& getIslands().hasIsland(getWorld(), invitedPlayer.getUniqueId())) {
-			invitedPlayer.sendMessage("commands.island.team.invite.you-will-lose-your-island");
-		}
-		invitedPlayer = null;
+		invitedPlayer.sendRawMessage("§a[" + user.getDisplayName() + "] invited you to join their team. Use [/"
+				+ getTopLabel() + " team accept] to join. This will expire in 60 seconds.");
 		return true;
 	}
 

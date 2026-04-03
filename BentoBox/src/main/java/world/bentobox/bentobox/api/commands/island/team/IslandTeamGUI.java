@@ -60,11 +60,11 @@ import world.bentobox.bentobox.util.Util;
 public class IslandTeamGUI {
 
 	/**
-	 * Ordered list of ranks from highest (OWNER) to lowest (COOP). Used for
+	 * Ordered list of ranks from highest (OWNER) to lowest (MEMBER). Used for
 	 * displaying members in rank order and filtering.
 	 */
 	private static final List<Integer> RANKS = List.of(RanksManager.OWNER_RANK, RanksManager.SUB_OWNER_RANK,
-			RanksManager.MEMBER_RANK, RanksManager.TRUSTED_RANK, RanksManager.COOP_RANK);
+			RanksManager.MEMBER_RANK);
 
 	private static final String NAME = ".name";
 	private static final String TIPS = "commands.island.team.gui.tips.";
@@ -265,7 +265,6 @@ public class IslandTeamGUI {
 
 	private void createInviteClickHandler(PanelItemBuilder builder, TeamInvite invite,
 			@NonNull List<ActionRecords> list) {
-		Type type = invite.getType();
 		builder.clickHandler((panel, user, clickType, clickSlot) -> {
 			if (list.stream().noneMatch(ar -> clickType.equals(ar.clickType()))) {
 				// If the click type is not in the template, don't do anything
@@ -273,19 +272,15 @@ public class IslandTeamGUI {
 			}
 			if (clickType.equals(ClickType.SHIFT_LEFT)
 					&& user.hasPermission(parent.getAcceptCommand().getPermission())) {
-				plugin.log("Invite accepted: " + user.getName() + " accepted " + type);
+				plugin.log("Invite accepted: " + user.getName() + " accepted team invite");
 				// Accept
-				switch (type) {
-					case COOP -> parent.getAcceptCommand().acceptCoopInvite(user, invite);
-					case TRUST -> parent.getAcceptCommand().acceptTrustInvite(user, invite);
-					default -> parent.getAcceptCommand().acceptTeamInvite(user, invite);
-				}
+				parent.getAcceptCommand().acceptTeamInvite(user, invite);
 				user.closeInventory();
 			}
 			if (clickType.equals(ClickType.SHIFT_RIGHT)
 					&& user.hasPermission(parent.getRejectCommand().getPermission())) {
 				// Reject
-				plugin.log("Invite rejected: " + user.getName() + " rejected " + type + " invite.");
+				plugin.log("Invite rejected: " + user.getName() + " rejected team invite.");
 				parent.getRejectCommand().execute(user, "", List.of());
 				user.closeInventory();
 			}
@@ -296,15 +291,9 @@ public class IslandTeamGUI {
 
 	private void createInviteDescription(PanelItemBuilder builder, Type type, String name,
 			@NonNull List<ActionRecords> list) {
-		builder.description(switch (type) {
-			case COOP -> List.of(user.getTranslation("commands.island.team.invite.name-has-invited-you.coop",
-					TextVariables.NAME, name));
-			case TRUST -> List.of(user.getTranslation("commands.island.team.invite.name-has-invited-you.trust",
-					TextVariables.NAME, name));
-			default -> List.of(
-					user.getTranslation("commands.island.team.invite.name-has-invited-you", TextVariables.NAME, name),
-					user.getTranslation("commands.island.team.invite.accept.confirmation"));
-		});
+		builder.description(List.of(
+				user.getTranslation("commands.island.team.invite.name-has-invited-you", TextVariables.NAME, name),
+				user.getTranslation("commands.island.team.invite.accept.confirmation")));
 		// Add all the tool tips
 		builder.description(list.stream().map(ar -> user.getTranslation(TIPS + ar.clickType().name() + NAME) + " "
 				+ user.getTranslation(ar.tooltip())).toList());
@@ -509,19 +498,11 @@ public class IslandTeamGUI {
 	}
 
 	private boolean removePlayer(User clicker, User member) {
-		// If member then kick, if coop, uncoop, if trusted, then untrust
-		return switch (island.getRank(member)) {
-			case RanksManager.COOP_RANK -> parent.getUncoopCommand().unCoopCmd(user, member.getUniqueId());
-			case RanksManager.TRUSTED_RANK -> parent.getUnTrustCommand().unTrustCmd(user, member.getUniqueId());
-			default -> {
-				if (parent.getKickCommand().canExecute(user, parent.getKickCommand().getLabel(),
-						List.of(member.getName()))) {
-					yield parent.getKickCommand().kick(clicker, member.getUniqueId());
-				} else {
-					yield false;
-				}
-			}
-		};
+		if (parent.getKickCommand().canExecute(user, parent.getKickCommand().getLabel(), List.of(member.getName()))) {
+			return parent.getKickCommand().kick(clicker, member.getUniqueId());
+		} else {
+			return false;
+		}
 
 	}
 
@@ -537,9 +518,8 @@ public class IslandTeamGUI {
 				String.valueOf(plugin.getIslands().getMaxMembers(island, RanksManager.MEMBER_RANK)), "[total]",
 				String.valueOf(island.getMemberSet().size()), "[online]", String.valueOf(onlineMemberCount)));
 
-		// We now need to get all online "members" of the island - incl. Trusted and
-		// coop
-		List<UUID> onlineMembers = island.getMemberSet(RanksManager.COOP_RANK).stream()
+		// We now need to get all online "members" of the island
+		List<UUID> onlineMembers = island.getMemberSet(RanksManager.MEMBER_RANK).stream()
 				.filter(uuid -> Util.getOnlinePlayerList(user).contains(Bukkit.getOfflinePlayer(uuid).getName()))
 				.toList();
 

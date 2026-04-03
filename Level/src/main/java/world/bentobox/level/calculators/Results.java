@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
 /**
@@ -29,19 +29,19 @@ public class Results {
 	/**
 	 * MaterialData count anything above sea level
 	 */
-	final Multiset<Object> mdCount = HashMultiset.create();
+	final Multiset<Object> mdCount = ConcurrentHashMultiset.create();
 	/**
 	 * Underwater count
 	 */
-	final Multiset<Object> uwCount = HashMultiset.create();
+	final Multiset<Object> uwCount = ConcurrentHashMultiset.create();
 	/**
 	 * Not-in-config count - blocks not listed in the scoring config file
 	 */
-	final Multiset<Object> ncCount = HashMultiset.create();
+	final Multiset<Object> ncCount = ConcurrentHashMultiset.create();
 	/**
 	 * Blocks not counted because they exceeded limits
 	 */
-	final Multiset<Object> ofCount = HashMultiset.create();
+	final Multiset<Object> ofCount = ConcurrentHashMultiset.create();
 	// AtomicLong and AtomicInteger must be used because they are changed by
 	// multiple concurrent threads
 	AtomicLong rawBlockCount = new AtomicLong(0);

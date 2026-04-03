@@ -33,6 +33,12 @@ public class ConfigSettings implements ConfigObject {
 	private int concurrentIslandCalcs = 1;
 
 	@ConfigComment("")
+	@ConfigComment("Number of chunks to scan per dimension per batch")
+	@ConfigComment("Increasing this will speed up scans but use more memory and CPU.")
+	@ConfigEntry(path = "chunks-to-scan")
+	private int chunksToScan = Math.max(200, Runtime.getRuntime().availableProcessors() * 100);
+
+	@ConfigComment("")
 	@ConfigComment("Island level calculation timeout in minutes.")
 	@ConfigComment("If an island takes longer that this time to calculate, then the calculation will abort.")
 	@ConfigComment("Generally, calculation should only take a few seconds, so if this ever triggers then something is not right.")
@@ -346,6 +352,23 @@ public class ConfigSettings implements ConfigObject {
 		if (concurrentIslandCalcs < 1)
 			concurrentIslandCalcs = 1;
 		this.concurrentIslandCalcs = concurrentIslandCalcs;
+	}
+
+	/**
+	 * @return the chunksToScan
+	 */
+	public int getChunksToScan() {
+		if (chunksToScan < 10)
+			chunksToScan = 100;
+		return chunksToScan;
+	}
+
+	/**
+	 * @param chunksToScan
+	 *            the chunksToScan to set
+	 */
+	public void setChunksToScan(int chunksToScan) {
+		this.chunksToScan = chunksToScan;
 	}
 
 	/**

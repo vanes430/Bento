@@ -191,6 +191,7 @@ public class TabbedPanel extends Panel implements PanelListener {
 
 	@Override
 	public void onInventoryClick(User user, InventoryClickEvent event) {
+		closed = false;
 		if (plugin.onTimeout(user, this)) {
 			event.setCancelled(true);
 			return;
@@ -203,8 +204,6 @@ public class TabbedPanel extends Panel implements PanelListener {
 			event.setCancelled(true);
 			this.openPanel(event.getRawSlot(), 0);
 			user.getPlayer().playSound(user.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1F, 1F);
-			// Reset the closed flag
-			closed = false;
 		}
 
 	}

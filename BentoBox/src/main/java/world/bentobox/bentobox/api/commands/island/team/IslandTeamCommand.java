@@ -48,15 +48,6 @@ public class IslandTeamCommand extends CompositeCommand {
 
 	private IslandTeamSetownerCommand setOwnerCommand;
 
-	/** Sub-commands for role management */
-	private IslandTeamUncoopCommand uncoopCommand;
-
-	private IslandTeamUntrustCommand unTrustCommand;
-
-	private IslandTeamCoopCommand coopCommand;
-
-	private IslandTeamTrustCommand trustCommand;
-
 	/** Sub-commands for invite system */
 	private IslandTeamInviteAcceptCommand acceptCommand;
 
@@ -84,8 +75,6 @@ public class IslandTeamCommand extends CompositeCommand {
 	 * <ul>
 	 * <li>Core team commands (invite, leave, setowner, kick)</li>
 	 * <li>Invite management commands (accept, reject)</li>
-	 * <li>Role commands if enabled (coop, trust)</li>
-	 * <li>Rank commands (promote, demote)</li>
 	 * <li>GUI panel template</li>
 	 * </ul>
 	 */
@@ -101,16 +90,6 @@ public class IslandTeamCommand extends CompositeCommand {
 		kickCommand = new IslandTeamKickCommand(this);
 		acceptCommand = new IslandTeamInviteAcceptCommand(this);
 		rejectCommand = new IslandTeamInviteRejectCommand(this);
-		if (RanksManager.getInstance().rankExists(RanksManager.COOP_RANK_REF)) {
-			coopCommand = new IslandTeamCoopCommand(this);
-			uncoopCommand = new IslandTeamUncoopCommand(this);
-		}
-		if (RanksManager.getInstance().rankExists(RanksManager.TRUSTED_RANK_REF)) {
-			trustCommand = new IslandTeamTrustCommand(this);
-			unTrustCommand = new IslandTeamUntrustCommand(this);
-		}
-		new IslandTeamPromoteCommand(this, "promote");
-		new IslandTeamPromoteCommand(this, "demote");
 
 		// Panels
 		if (!new File(getPlugin().getDataFolder() + File.separator + "panels", "team_panel.yml").exists()) {
@@ -257,20 +236,6 @@ public class IslandTeamCommand extends CompositeCommand {
 		handler.deleteID(invitee.toString());
 	}
 
-	/**
-	 * @return the coopCommand
-	 */
-	protected IslandTeamCoopCommand getCoopCommand() {
-		return coopCommand;
-	}
-
-	/**
-	 * @return the trustCommand
-	 */
-	protected IslandTeamTrustCommand getTrustCommand() {
-		return trustCommand;
-	}
-
 	public IslandTeamInviteCommand getInviteCommand() {
 		return inviteCommand;
 	}
@@ -302,20 +267,6 @@ public class IslandTeamCommand extends CompositeCommand {
 	 */
 	public IslandTeamSetownerCommand getSetOwnerCommand() {
 		return setOwnerCommand;
-	}
-
-	/**
-	 * @return the uncoopCommand
-	 */
-	public IslandTeamUncoopCommand getUncoopCommand() {
-		return uncoopCommand;
-	}
-
-	/**
-	 * @return the unTrustCommand
-	 */
-	public IslandTeamUntrustCommand getUnTrustCommand() {
-		return unTrustCommand;
 	}
 
 }

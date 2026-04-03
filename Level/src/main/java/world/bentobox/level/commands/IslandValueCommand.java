@@ -15,6 +15,8 @@ import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.localization.TextVariables;
 import world.bentobox.bentobox.api.user.User;
+import world.bentobox.bentobox.database.objects.Island;
+import world.bentobox.bentobox.managers.RanksManager;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.level.Level;
 import world.bentobox.level.objects.IslandLevels;
@@ -40,27 +42,50 @@ public class IslandValueCommand extends CompositeCommand {
 
 	@Override
 	public boolean execute(User user, String label, List<String> args) {
+		// Find the island globally if not in current world
+		Island island = getIslands().getIsland(user.getWorld(), user);
+		if (island == null) {
+			List<Island> islands = getIslands().getIslands(user.getUniqueId());
+			island = islands.stream()
+					.filter(i -> addon.isRegisteredGameModeWorld(i.getWorld()))
+					.findFirst()
+					.orElse(null);
+		}
+
+		if (island == null) {
+			user.sendMessage("general.errors.player-has-no-island");
+			return false;
+		}
+		
+		// If it's a self-request (not op/admin), check for ownership
+		if (!user.isOp() && !user.hasPermission(this.getPermissionPrefix() + "admin.level")) {
+			if (island.getRank(user.getUniqueId()) < RanksManager.OWNER_RANK) {
+				user.sendMessage("stone-generator.messages.owner-only");
+				return false;
+			}
+		}
+
 		if (args.size() > 1) {
 			showHelp(this, user);
 			return false;
 		}
 
 		if (args.isEmpty()) {
-			ValuePanel.openPanel(addon, getWorld(), user);
+			ValuePanel.openPanel(addon, island.getWorld(), user);
 			return true;
 		}
 
 		String arg = args.get(0);
 		if ("HAND".equalsIgnoreCase(arg)) {
-			executeHandCommand(user);
+			executeHandCommand(user, island);
 			return true;
 		}
 
-		executeMaterialCommand(user, arg);
+		executeMaterialCommand(user, arg, island);
 		return true;
 	}
 
-	private void executeHandCommand(User user) {
+	private void executeHandCommand(User user, Island island) {
 		Player player = user.getPlayer();
 		PlayerInventory inventory = player.getInventory();
 		ItemStack mainHandItem = inventory.getItemInMainHand();
@@ -70,15 +95,15 @@ public class IslandValueCommand extends CompositeCommand {
 			return;
 		}
 
-		printValue(user, mainHandItem.getType());
+		printValue(user, mainHandItem.getType(), island);
 	}
 
-	private void executeMaterialCommand(User user, String arg) {
+	private void executeMaterialCommand(User user, String arg, Island island) {
 		Material material = Material.matchMaterial(arg);
 		if (material == null) {
-			Utils.sendMessage(user, user.getTranslation(getWorld(), "level.conversations.unknown-item", MATERIAL, arg));
+			Utils.sendMessage(user, user.getTranslation(island.getWorld(), "level.conversations.unknown-item", MATERIAL, arg));
 		} else {
-			printValue(user, material);
+			printValue(user, material, island);
 		}
 	}
 
@@ -89,24 +114,26 @@ public class IslandValueCommand extends CompositeCommand {
 	 *            User who receives the message.
 	 * @param material
 	 *            Material value.
+	 * @param island
+	 *            The island to check values for.
 	 */
-	private void printValue(User user, Object material) {
-		Integer value = this.addon.getBlockConfig().getValue(getWorld(), material);
+	private void printValue(User user, Object material, Island island) {
+		Integer value = this.addon.getBlockConfig().getValue(island.getWorld(), material);
 
 		if (value != null) {
-			Utils.sendMessage(user, user.getTranslation(this.getWorld(), "level.conversations.value", "[value]",
+			Utils.sendMessage(user, user.getTranslation(island.getWorld(), "level.conversations.value", "[value]",
 					String.valueOf(value), MATERIAL, Utils.prettifyObject(material, user)));
 
 			double underWater = this.addon.getSettings().getUnderWaterMultiplier();
 
 			if (underWater > 1.0) {
-				Utils.sendMessage(user, user.getTranslation(this.getWorld(), "level.conversations.success-underwater",
+				Utils.sendMessage(user, user.getTranslation(island.getWorld(), "level.conversations.success-underwater",
 						"[value]", (underWater * value) + ""), MATERIAL, Utils.prettifyObject(material, user));
 			}
 
 			// Show how many have been placed and how many are allowed
 			@NonNull IslandLevels lvData = this.addon.getManager()
-					.getLevelsData(getIslands().getPrimaryIsland(getWorld(), user.getUniqueId()));
+					.getLevelsData(island);
 			int count = lvData.getMdCount().getOrDefault(material, 0) + lvData.getUwCount().getOrDefault(material, 0);
 			user.sendMessage("level.conversations.you-have", TextVariables.NUMBER, String.valueOf(count));
 			Integer limit = this.addon.getBlockConfig().getLimit(material);
@@ -114,7 +141,7 @@ public class IslandValueCommand extends CompositeCommand {
 				user.sendMessage("level.conversations.you-can-place", TextVariables.NUMBER, String.valueOf(limit));
 			}
 		} else {
-			Utils.sendMessage(user, user.getTranslation(this.getWorld(), "level.conversations.no-value"));
+			Utils.sendMessage(user, user.getTranslation(island.getWorld(), "level.conversations.no-value"));
 		}
 	}
 

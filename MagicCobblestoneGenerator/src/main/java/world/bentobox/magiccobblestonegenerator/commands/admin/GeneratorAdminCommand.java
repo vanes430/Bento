@@ -14,7 +14,7 @@ public class GeneratorAdminCommand extends CompositeCommand {
 
 	@Override
 	public void setup() {
-		this.setPermission("[gamemode].admin.stone-generator");
+		this.permission = this.getParent().getPermissionPrefix() + "admin.generator";
 	}
 
 	@Override

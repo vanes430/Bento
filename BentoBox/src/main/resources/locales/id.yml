@@ -630,6 +630,7 @@ commands:
     confirm: '&c Ketik perintah lagi dalam &b [seconds]s&c untuk mengonfirmasi.'
     previous-request-cancelled: '&6 Permintaan konfirmasi sebelumnya dibatalkan.'
     request-cancelled: '&c Batas waktu konfirmasi - &b permintaan dibatalkan.'
+    force-flag-required: '&c Ini adalah tindakan destruktif! Tambahkan bendera &b --force &c untuk mengonfirmasi: &e [command] --force'
   delay:
     previous-command-cancelled: '&c Perintah sebelumnya dibatalkan'
     stand-still: '&6 Jangan bergerak! Teleportasi dalam [seconds] detik'

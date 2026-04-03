@@ -814,18 +814,26 @@ public class Util {
 	 */
 	public static void runCommands(User user, String ownerName, @NonNull List<String> commands, String commandType) {
 		commands.forEach(command -> {
-			command = command.replace("[player]", user.getName());
-			command = command.replace("[owner]", ownerName);
-			if (command.startsWith("[SUDO]")) {
+			String cmd = command.replace("[player]", user.getName());
+			cmd = cmd.replace("[owner]", ownerName);
+			if (cmd.startsWith("[SUDO]")) {
 				// Execute the command by the player
-				if (!user.isOnline() || !user.performCommand(command.substring(6))) {
+				if (user.isOnline()) {
+					final String finalCmd = cmd.substring(6);
+					user.getPlayer().getScheduler().runDelayed(plugin, t -> {
+						if (!user.performCommand(finalCmd)) {
+							plugin.logError("Could not execute " + commandType + " command for " + user.getName() + ": "
+									+ finalCmd);
+						}
+					}, null, 1L);
+				} else {
 					plugin.logError("Could not execute " + commandType + " command for " + user.getName() + ": "
-							+ command.substring(6));
+							+ cmd.substring(6) + " (Player is offline)");
 				}
 			} else {
 				// Otherwise execute as the server console
-				if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-					plugin.logError("Could not execute " + commandType + " command as console: " + command);
+				if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd)) {
+					plugin.logError("Could not execute " + commandType + " command as console: " + cmd);
 				}
 			}
 		});

@@ -119,7 +119,7 @@ logs:
   clean-super-flat-chunks: true
   # Toggle whether downloading data from GitHub should be logged in the server logs or not.
   # Added since 1.5.0.
-  github-download-data: true
+  github-download-data: false
 island:
   # Override island distance mismatch checking. BentoBox normally refuses to run if
   # the island distance in the gamemode config is different to the one stored in the database
@@ -235,7 +235,7 @@ web:
     # features that rely on the data downloaded from the GitHub API.
     # It does not send any data.
     # Added since 1.5.0.
-    download-data: true
+    download-data: false
     # Time in minutes between each connection to the GitHub API.
     # This allows for up-to-the-minute information gathering.
     # However, as the GitHub API data does not get updated instantly, this value cannot be set to less than 60 minutes.

@@ -1248,7 +1248,6 @@ public class IslandsManager {
 				Util.teleportAsync(Objects.requireNonNull(player), home).thenAccept(b -> {
 					player.getScheduler().run(plugin, task3 -> {
 						if (Boolean.TRUE.equals(b)) {
-							plugin.log("[IslandsManager] homeTeleportAsync: " + player.getName() + " -> " + home);
 							teleported(world, user, name, newIsland, island);
 							result.complete(true);
 						} else {

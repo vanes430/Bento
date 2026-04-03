@@ -71,6 +71,9 @@ public class StoneGeneratorManager {
 	public boolean canOperate(World w) {
 		return islandManager.canOperate(w);
 	}
+	public boolean isWorldSupported(World w) {
+		return canOperate(w);
+	}
 
 	public @Nullable GeneratorTierObject getGeneratorTier(Island island, Location loc,
 			GeneratorTierObject.GeneratorType type) {

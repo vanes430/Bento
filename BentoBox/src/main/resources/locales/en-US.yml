@@ -609,7 +609,7 @@ commands:
     confirm: '&c Type command again within &b [seconds]s&c  to confirm.'
     previous-request-cancelled: '&6 Previous confirmation request cancelled.'
     request-cancelled: '&c Confirmation timeout - &b request cancelled.'
-    force-flag-required: '&c This is a destructive action! Add &b --force &c flag to confirm: &e /[command] --force'
+    force-flag-required: '&c This is a destructive action! Add &b --force &c flag to confirm: &e [command] --force'
   delay:
     previous-command-cancelled: '&c Previous command cancelled'
     stand-still: '&6 Do not move! Teleporting in [seconds] seconds'

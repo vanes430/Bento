@@ -39,7 +39,7 @@ public class Pipeliner {
 		toProcessQueue = new ConcurrentLinkedQueue<>();
 		inProcessQueue = new ConcurrentHashMap<>();
 		// Loop continuously - check every tick if there is an island to scan
-		// Use Folia scheduler - run every 10 ticks (0.5 seconds)
+		// Use Folia scheduler - run every tick (0.05 seconds) for maximum speed
 		task = Bukkit.getGlobalRegionScheduler().runAtFixedRate(BentoBox.getInstance(), t -> {
 			if (!BentoBox.getInstance().isEnabled()) {
 				cancel();
@@ -58,11 +58,25 @@ public class Pipeliner {
 					scanIsland(iD);
 				}
 			}
-		}, 1L, 10L);
+		}, 1L, 1L);
 	}
 
 	private void cancel() {
 		task.cancel();
+	}
+
+	/**
+	 * Returns true if the island is already in the queue or being processed.
+	 * 
+	 * @param island
+	 *            The island to check
+	 * @return true if already in progress
+	 */
+	public boolean isInQueue(Island island) {
+		return inProcessQueue.keySet().stream().filter(IslandLevelCalculator::isNotZeroIsland)
+				.map(IslandLevelCalculator::getIsland).anyMatch(island::equals)
+				|| toProcessQueue.stream().filter(IslandLevelCalculator::isNotZeroIsland)
+						.map(IslandLevelCalculator::getIsland).anyMatch(island::equals);
 	}
 
 	/**

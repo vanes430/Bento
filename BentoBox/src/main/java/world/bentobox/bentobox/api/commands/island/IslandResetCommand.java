@@ -119,7 +119,7 @@ public class IslandResetCommand extends ConfirmableCommand {
 		// Set cooldown
 		setCooldown(user.getUniqueId(), getSettings().getResetCooldown());
 
-		user.sendMessage("commands.island.reset.success");
+		user.sendMessage("commands.island.reset.success", TextVariables.LABEL, getTopLabel());
 		return true;
 	}
 

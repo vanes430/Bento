@@ -1,9 +1,14 @@
 package world.bentobox.bentobox.api.commands;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import world.bentobox.bentobox.api.addons.Addon;
+import world.bentobox.bentobox.api.localization.TextVariables;
 import world.bentobox.bentobox.api.user.User;
+import world.bentobox.bentobox.util.ExpiringMap;
+import world.bentobox.bentobox.util.Pair;
 
 /**
  * An extension of {@link CompositeCommand} that adds a confirmation step for
@@ -12,6 +17,9 @@ import world.bentobox.bentobox.api.user.User;
  * When a command needs confirmation, it calls
  * {@link #checkForceFlag(User, List)}. If the flag is not provided, the command
  * will be cancelled and a message will be shown to the user.
+ * <p>
+ * Alternatively, it can call {@link #checkConfirmation(User)} to require the
+ * user to enter the command again within a certain time frame.
  * <p>
  * Example usage:
  * 
@@ -31,6 +39,13 @@ import world.bentobox.bentobox.api.user.User;
  * @since 1.0
  */
 public abstract class ConfirmableCommand extends CompositeCommand {
+
+	/**
+	 * Confirmation cache for users who have run a command once and need to run it
+	 * again to confirm.
+	 */
+	private static final ExpiringMap<Pair<UUID, String>, Boolean> confirmationCache = new ExpiringMap<>(10,
+			TimeUnit.SECONDS);
 
 	/**
 	 * Creates a top-level confirmable command registered by an addon.
@@ -135,6 +150,28 @@ public abstract class ConfirmableCommand extends CompositeCommand {
 		}
 
 		user.sendRawMessage(message);
+		return false;
+	}
+
+	/**
+	 * Checks if the user has run the same command once and is now running it again
+	 * to confirm.
+	 * 
+	 * @param user
+	 *            The user to check for confirmation.
+	 * @return true if the user has confirmed, false otherwise.
+	 */
+	protected boolean checkConfirmation(User user) {
+		Pair<UUID, String> key = new Pair<>(user.getUniqueId(), getUsage());
+		if (confirmationCache.containsKey(key)) {
+			confirmationCache.remove(key);
+			return true;
+		}
+
+		// User has not run the command once. Add them to the cache.
+		confirmationCache.put(key, true);
+		user.sendMessage("commands.confirmation.confirm", "[seconds]",
+				String.valueOf(getSettings().getConfirmationTime()));
 		return false;
 	}
 }
